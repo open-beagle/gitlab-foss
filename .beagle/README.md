@@ -24,11 +24,13 @@ docker run -it --rm \
 -v $PWD:/go/src/gitlab.com/gitlab-org/gitlab \
 -w /go/src/gitlab.com/gitlab-org/gitlab \
 -e CURDIR=/go/src/gitlab.com/gitlab-org/gitlab \
+-e RAILS_ENV=production \
+-e NODE_ENV=production \
 registry.cn-qingdao.aliyuncs.com/wod/ruby:2.7.4-bullseye \
 bash
 
 apt update -y 
-apt install -y nodejs yarn cmake
+apt install -y nodejs cmake
 
 apt install -y supervisor logrotate locales curl \
       nginx openssh-server redis-tools \
@@ -38,9 +40,17 @@ apt install -y supervisor logrotate locales curl \
       libxml2 libxslt1.1 libcurl4 libre2-dev tzdata unzip libimage-exiftool-perl \
       libmagic1 
 
-bundle install -j"$(nproc)" --deployment --without development test mysql aws
+bundle install -j"$(nproc)" 
+
+wget --quiet -O - https://dl.yarnpkg.com/debian/pubkey.gpg  | apt-key add - \
+&& echo 'deb https://dl.yarnpkg.com/debian/ stable main' > /etc/apt/sources.list.d/yarn.list
+apt update && apt install -y yarn
 
 yarn install --production --pure-lockfile
+
+cp ./config/resque.yml.example ./config/resque.yml
+cp ./config/gitlab.yml.example ./config/gitlab.yml
+cp ./config/database.yml.postgresql ./config/database.yml
 
 bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
 
