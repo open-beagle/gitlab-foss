@@ -43,6 +43,7 @@ echo "Build gitlab-workhorse"
 chown -R ${GITLAB_USER}: /usr/local/bin/gitlab-pages 
 
 # install gitaly
+cp -a ${GITLAB_GITALY_INSTALL_DIR}/config.toml.example ${GITLAB_GITALY_INSTALL_DIR}/config.toml
 chown -R ${GITLAB_USER}: ${GITLAB_GITALY_INSTALL_DIR}
 
 # remove HSTS config from the default headers, we configure it in nginx
