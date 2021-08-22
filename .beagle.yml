@@ -179,14 +179,12 @@ steps:
       RAILS_ENV: production
       NODE_ENV: production
     commands:
-      - rm -rf .buildx
+      - rm -rf .buildx vendor/bundle
       - bash .beagle/gitlab/patch.sh
       - bundle install -j"$(nproc)" 
-      - yarn install --production --pure-lockfile
       - cp ./config/resque.yml.example ./config/resque.yml
       - cp ./config/gitlab.yml.example ./config/gitlab.yml
       - cp ./config/database.yml.postgresql ./config/database.yml
-      - bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
       - rm -rf .dockerignore
       - cp .beagle/gitlab/.dockerignore .dockerignore
 
@@ -270,14 +268,12 @@ steps:
       RAILS_ENV: production
       NODE_ENV: production
     commands:
-      - rm -rf .buildx
+      - rm -rf .buildx vendor/bundle
       - bash .beagle/gitlab/patch.sh
       - bundle install -j"$(nproc)" 
-      - yarn install --production --pure-lockfile
       - cp ./config/resque.yml.example ./config/resque.yml
       - cp ./config/gitlab.yml.example ./config/gitlab.yml
       - cp ./config/database.yml.postgresql ./config/database.yml
-      - bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
       - rm -rf .dockerignore
       - cp .beagle/gitlab/.dockerignore .dockerignore
 
