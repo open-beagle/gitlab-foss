@@ -10,6 +10,10 @@ LABEL maintainer=${AUTHOR} version=${VERSION}
 ARG TARGETOS
 ARG TARGETARCH
 
+ENV GITLAB_HOME="/home/git" \
+    GITLAB_SHELL_INSTALL_DIR="${GITLAB_HOME}/gitlab-shell" \
+    GITLAB_GITALY_INSTALL_DIR="${GITLAB_HOME}/gitaly" \
+
 COPY .buildx/gitlab-shell/ ${GITLAB_SHELL_INSTALL_DIR}/
 COPY .buildx/gitlab-workhorse/ /usr/local/bin/
 COPY .buildx/gitlab-pages/ /usr/local/bin/
