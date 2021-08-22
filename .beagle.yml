@@ -63,7 +63,7 @@ steps:
       - name: docker
         path: /var/run/docker.sock
     settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/ruby:2.7.4-bullseye
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-runtime:v14.1.3-amd64
       dockerfile: .beagle/base/dockerfile
       repo: wod-arm/gitlab-base
       version: 'v14.1.3'
@@ -154,7 +154,7 @@ steps:
       - name: docker
         path: /var/run/docker.sock
     settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/ruby:2.7.4-bullseye
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-runtime:v14.1.3-arm64
       dockerfile: .beagle/base/dockerfile
       repo: wod-arm/gitlab-base
       version: 'v14.1.3'
@@ -245,7 +245,7 @@ steps:
       - name: docker
         path: /var/run/docker.sock
     settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/ruby:2.7.4-bullseye
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-runtime:v14.1.3-ppc64le
       dockerfile: .beagle/base/dockerfile
       repo: wod-arm/gitlab-base
       version: 'v14.1.3'
