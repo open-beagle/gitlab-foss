@@ -16,7 +16,7 @@ rm -rf /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
 # add ${GITLAB_USER} user
 adduser --disabled-login --gecos 'GitLab' ${GITLAB_USER}
 passwd -d ${GITLAB_USER}
-chown -R ${GITLAB_USER}: ${GITLAB_HOME}
+chown -R ${GITLAB_USER}:${GITLAB_USER} ${GITLAB_HOME}
 
 # set PATH (fixes cron job PATH issues)
 cat >> ${GITLAB_HOME}/.profile <<EOF
@@ -29,10 +29,12 @@ GITLAB_PAGES_VERSION=${GITLAB_PAGES_VERSION:-$(cat ${GITLAB_INSTALL_DIR}/GITLAB_
 # install gitlab-shell
 echo "Downloading gitlab-shell v.${GITLAB_SHELL_VERSION}..."
 chown -R ${GITLAB_USER}: ${GITLAB_SHELL_INSTALL_DIR}
+cd ${GITLAB_SHELL_INSTALL_DIR}
+exec_as_git mv ${GITLAB_SHELL_INSTALL_DIR}/config.yml.example ${GITLAB_SHELL_INSTALL_DIR}/config.yml
 exec_as_git bundle install -j"$(nproc)"
 exec_as_git "PATH=$PATH" make _install
-exec_as_git cp -a ${GITLAB_SHELL_INSTALL_DIR}/bin/gitlab-* /usr/local/bin/
-exec_as_git cp -a ${GITLAB_SHELL_INSTALL_DIR}/bin/check /usr/local/bin/
+cp -a ${GITLAB_SHELL_INSTALL_DIR}/bin/gitlab-* /usr/local/bin/
+cp -a ${GITLAB_SHELL_INSTALL_DIR}/bin/check /usr/local/bin/
 
 # remove unused repositories directory created by gitlab-shell install
 rm -rf ${GITLAB_HOME}/repositories
