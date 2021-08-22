@@ -14,7 +14,7 @@ exec_as_git() {
 rm -rf /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
 
 # add ${GITLAB_USER} user
-# adduser --disabled-login --gecos 'GitLab' ${GITLAB_USER}
+adduser --disabled-login --gecos 'GitLab' ${GITLAB_USER}
 passwd -d ${GITLAB_USER}
 
 # set PATH (fixes cron job PATH issues)
@@ -38,13 +38,16 @@ rm -rf ${GITLAB_HOME}/repositories
 
 # build gitlab-workhorse
 echo "Build gitlab-workhorse"
+chown -R ${GITLAB_USER}: /usr/local/bin/gitlab*
 
 # install gitlab-pages
-chown -R ${GITLAB_USER}: /usr/local/bin/gitlab-pages 
+chown -R ${GITLAB_USER}: /usr/local/bin/gitlab*
 
 # install gitaly
 cp -a ${GITLAB_GITALY_INSTALL_DIR}/config.toml.example ${GITLAB_GITALY_INSTALL_DIR}/config.toml
 chown -R ${GITLAB_USER}: ${GITLAB_GITALY_INSTALL_DIR}
+chown -R ${GITLAB_USER}: /usr/local/bin/gitaly*
+chown -R ${GITLAB_USER}: /usr/local/bin/praefect
 
 # remove HSTS config from the default headers, we configure it in nginx
 exec_as_git sed -i "/headers\['Strict-Transport-Security'\]/d" ${GITLAB_INSTALL_DIR}/app/controllers/application_controller.rb
