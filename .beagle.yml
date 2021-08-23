@@ -88,9 +88,9 @@ steps:
       RAILS_ENV: production
       NODE_ENV: production
     commands:
-      - rm -rf .buildx
+      - rm -rf .buildx vendor/bundle/ruby/*/cache
       - bash .beagle/gitlab/patch.sh
-      - bundle install -j"$(nproc)" 
+      - bundle install -j"$(nproc)" --deployment --without development test mysql aws
       - yarn install --production --pure-lockfile
       - cp ./config/resque.yml.example ./config/resque.yml
       - cp ./config/gitlab.yml.example ./config/gitlab.yml

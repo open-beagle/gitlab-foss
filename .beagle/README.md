@@ -19,6 +19,30 @@ docker run -it --rm \
 registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.6-alpine \
 make -C workhorse install
 
+# gitlab-foss-amd64
+docker run -it --rm \
+-v $PWD:/go/src/gitlab.com/gitlab-org/gitlab \
+-w /go/src/gitlab.com/gitlab-org/gitlab \
+registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-amd64 \
+bash
+
+bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems
+bundle install -j"$(nproc)" --deployment --without development test mysql aws
+bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
+
+# gitlab-foss-arm64
+docker run -it --rm \
+-v $PWD:/go/src/gitlab.com/gitlab-org/gitlab \
+-w /go/src/gitlab.com/gitlab-org/gitlab \
+registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-arm64 \
+bash
+
+rm -rf .buildx vendor/bundle/ruby/*/cache
+bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems
+bundle install -j"$(nproc)" --deployment --without development test mysql aws
+bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
+
+
 # gitlab
 docker run -it --rm \
 -v $PWD:/go/src/gitlab.com/gitlab-org/gitlab \
