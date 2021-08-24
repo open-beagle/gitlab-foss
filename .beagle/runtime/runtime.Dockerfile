@@ -25,3 +25,9 @@ RUN set -ex \
  && locale-gen en_US.UTF-8 \
  && DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales \
  && rm -rf /var/lib/apt/lists/*
+
+COPY Gemfile Gemfile.lock /go/src/gitlab.com/gitlab-org/gitlab/
+COPY vendor /go/src/gitlab.com/gitlab-org/gitlab/
+
+RUN bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems && \
+bundle install -j"$(nproc)"
