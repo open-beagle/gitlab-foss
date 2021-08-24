@@ -88,7 +88,9 @@ steps:
       RAILS_ENV: production
       NODE_ENV: production
     commands:
-      - rm -rf .buildx vendor/bundle/ruby/*/cache
+      - rm -rf .buildx node_modules vendor/bundle
+      - cp -r /data/gitlab/node_modules /go/src/gitlab.com/gitlab-org/gitlab/node_modules
+      - cp -r /data/gitlab/vendor/bundle /go/src/gitlab.com/gitlab-org/gitlab/vendor/bundle
       - bash .beagle/gitlab/patch.sh
       - bundle install -j"$(nproc)" --deployment --without development test mysql aws
       - yarn install --production --pure-lockfile
@@ -96,8 +98,6 @@ steps:
       - cp ./config/gitlab.yml.example ./config/gitlab.yml
       - cp ./config/database.yml.postgresql ./config/database.yml
       - bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
-      - rm -rf .dockerignore
-      - cp .beagle/gitlab/.dockerignore .dockerignore
 
   - name: docker-amd64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -179,14 +179,8 @@ steps:
       RAILS_ENV: production
       NODE_ENV: production
     commands:
-      - rm -rf .buildx vendor/bundle
-      - bash .beagle/gitlab/patch.sh
-      - bundle install -j"$(nproc)" 
-      - cp ./config/resque.yml.example ./config/resque.yml
-      - cp ./config/gitlab.yml.example ./config/gitlab.yml
-      - cp ./config/database.yml.postgresql ./config/database.yml
-      - rm -rf .dockerignore
-      - cp .beagle/gitlab/.dockerignore .dockerignore
+      - rm -rf .buildx node_modules vendor/bundle
+      - cp -r /data/gitlab/vendor/bundle /go/src/gitlab.com/gitlab-org/gitlab/vendor/bundle
 
   - name: docker-arm64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -268,14 +262,8 @@ steps:
       RAILS_ENV: production
       NODE_ENV: production
     commands:
-      - rm -rf .buildx vendor/bundle
-      - bash .beagle/gitlab/patch.sh
-      - bundle install -j"$(nproc)" 
-      - cp ./config/resque.yml.example ./config/resque.yml
-      - cp ./config/gitlab.yml.example ./config/gitlab.yml
-      - cp ./config/database.yml.postgresql ./config/database.yml
-      - rm -rf .dockerignore
-      - cp .beagle/gitlab/.dockerignore .dockerignore
+      - rm -rf .buildx node_modules vendor/bundle
+      - cp -r /data/gitlab/vendor/bundle /go/src/gitlab.com/gitlab-org/gitlab/vendor/bundle
 
   - name: docker-ppc64le
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0

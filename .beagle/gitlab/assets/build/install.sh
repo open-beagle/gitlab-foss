@@ -58,6 +58,10 @@ exec_as_git sed -i "/headers\['Strict-Transport-Security'\]/d" ${GITLAB_INSTALL_
 # revert `rake gitlab:setup` changes from gitlabhq/gitlabhq@a54af831bae023770bf9b2633cc45ec0d5f5a66a
 exec_as_git sed -i 's/db:reset/db:setup/' ${GITLAB_INSTALL_DIR}/lib/tasks/gitlab/setup.rake
 
+cd ${GITLAB_INSTALL_DIR}
+
+exec_as_git bundle install -j"$(nproc)" --deployment --without development test mysql aws
+
 chown -R ${GITLAB_USER}: ${GITLAB_INSTALL_DIR}
 
 # make sure everything in ${GITLAB_HOME} is owned by ${GITLAB_USER} user

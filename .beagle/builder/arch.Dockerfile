@@ -1,4 +1,4 @@
-ARG BASE=registry.cn-qingdao.aliyuncs.com/wod-arm/ruby:2.7.4-bullseye-amd64
+ARG BASE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.1.3-amd64
 
 FROM $BASE
 
@@ -14,11 +14,10 @@ RUN set -ex \
   libreadline-dev libncurses5-dev libffi-dev curl openssh-server libxml2-dev libxslt-dev \
   libcurl4-openssl-dev libicu-dev logrotate rsync pkg-config cmake runit-systemd
 
+
 COPY Gemfile Gemfile.lock package.json yarn.lock /data/gitlab/
 COPY vendor /data/gitlab/vendor
 COPY scripts /data/gitlab/scripts
 
-RUN --mount=type=bind,readwrite,target=/usr/local/share/.cache/yarn \
-cd /data/gitlab && \
-yarn install --production --pure-lockfile && \
+RUN cd /data/gitlab && \
 bundle install -j"$(nproc)" --deployment --without development test mysql aws
