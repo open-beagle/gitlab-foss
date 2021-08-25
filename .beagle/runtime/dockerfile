@@ -16,8 +16,8 @@ RUN set -ex \
  && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
       sudo supervisor locales curl \
       nginx openssh-server postgresql-client-12 redis-tools \
-      graphicsmagick \
-      tzdata unzip libimage-exiftool-perl \
+      graphicsmagick libimage-exiftool-perl postfix \
+      tzdata unzip  \
  && update-locale LANG=C.UTF-8 LC_MESSAGES=POSIX \
  && locale-gen en_US.UTF-8 \
  && DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales \
