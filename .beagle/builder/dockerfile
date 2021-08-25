@@ -12,7 +12,7 @@ RUN set -ex \
  && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
   nodejs yarn build-essential zlib1g-dev libyaml-dev libssl-dev libgdbm-dev libre2-dev \
   libreadline-dev libncurses5-dev libffi-dev curl openssh-server libxml2-dev libxslt-dev \
-  libcurl4-openssl-dev libicu-dev logrotate rsync pkg-config cmake runit-systemd
+  libcurl4-openssl-dev libicu-dev rsync pkg-config cmake runit-systemd
 
 COPY Gemfile Gemfile.lock package.json yarn.lock /data/gitlab/
 COPY vendor /data/gitlab/vendor
