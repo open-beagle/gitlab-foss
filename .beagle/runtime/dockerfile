@@ -18,6 +18,10 @@ RUN set -ex \
       nginx openssh-server postgresql-client-12 redis-tools \
       graphicsmagick libimage-exiftool-perl postfix logrotate gettext-base \
       tzdata unzip \
+      libpq5 zlib1g libyaml-0-2 libssl1.1 \
+      libgdbm6 libreadline8 libncurses5 libffi7 \
+      libxml2 libxslt1.1 libcurl4 libicu66 libre2-dev \
+      libmagic1 \
  && update-locale LANG=C.UTF-8 LC_MESSAGES=POSIX \
  && locale-gen en_US.UTF-8 \
  && DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales \
