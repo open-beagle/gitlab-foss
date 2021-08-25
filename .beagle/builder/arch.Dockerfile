@@ -20,4 +20,5 @@ COPY vendor /data/gitlab/vendor
 COPY scripts /data/gitlab/scripts
 
 RUN cd /data/gitlab && \
+bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems && \
 bundle install -j"$(nproc)" --deployment --without development test mysql aws

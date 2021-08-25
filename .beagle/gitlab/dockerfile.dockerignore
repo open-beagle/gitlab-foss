@@ -1,5 +1,12 @@
 .git/
+.beagle/
+.github/
+.gitlab/
+.theia/
+
+changelogs/
 node_modules/
-vendor/bundle/ruby/2.7.0/cache
+
+app/assets/
 workhorse/
 tmp/cache

@@ -21,4 +21,5 @@ COPY scripts /data/gitlab/scripts
 RUN --mount=type=bind,readwrite,target=/usr/local/share/.cache/yarn \
 cd /data/gitlab && \
 yarn install --production --pure-lockfile && \
+bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems && \
 bundle install -j"$(nproc)" --deployment --without development test mysql aws
