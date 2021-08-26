@@ -28,32 +28,33 @@ docker run -it --rm \
 -e RAILS_ENV=production \
 -e NODE_ENV=production \
 registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-amd64 \
-bash
-
-rm -rf .buildx node_modules vendor/bundle
-cp -r /data/gitlab/node_modules /go/src/gitlab.com/gitlab-org/gitlab/node_modules
-cp -r /data/gitlab/vendor/bundle /go/src/gitlab.com/gitlab-org/gitlab/vendor/bundle
-
-bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems
-bundle install -j"$(nproc)" --deployment --without development test mysql aws
-
-cp ./config/resque.yml.example ./config/resque.yml
-cp ./config/gitlab.yml.example ./config/gitlab.yml
-cp ./config/database.yml.postgresql ./config/database.yml
+bash -c '
+rm -rf .buildx node_modules vendor/bundle && \
+cp -r /data/gitlab/node_modules /go/src/gitlab.com/gitlab-org/gitlab/node_modules && \
+cp -r /data/gitlab/vendor/bundle /go/src/gitlab.com/gitlab-org/gitlab/vendor/bundle && \
+bash .beagle/gitlab/patch.sh && \
+bundle install -j"$(nproc)" --deployment --without development test mysql aws && \
+yarn install --production --pure-lockfile && \
+cp ./config/resque.yml.example ./config/resque.yml && \
+cp ./config/gitlab.yml.example ./config/gitlab.yml && \
+cp ./config/database.yml.postgresql ./config/database.yml && \
 bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
+'
 
 # gitlab-foss-arm64
 docker run -it --rm \
 -v $PWD:/go/src/gitlab.com/gitlab-org/gitlab \
 -w /go/src/gitlab.com/gitlab-org/gitlab \
-registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-arm64 \
-bash
-
-rm -rf .buildx vendor/bundle/ruby/*/cache
-bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems
-bundle install -j"$(nproc)" --deployment --without development test mysql aws
-bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
-
+-e RAILS_ENV=production \
+-e NODE_ENV=production \
+registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-amd64 \
+bash -c '
+rm -rf .buildx node_modules vendor/bundle && \
+cp -r /data/gitlab/vendor/bundle /go/src/gitlab.com/gitlab-org/gitlab/vendor/bundle && \
+bash .beagle/gitlab/patch.sh && \
+bundle install -j"$(nproc)" --deployment --without development test mysql aws && \
+yarn install --production --pure-lockfile
+'
 
 # gitlab
 docker run -it --rm \

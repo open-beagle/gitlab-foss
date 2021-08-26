@@ -16,7 +16,7 @@ RUN set -ex \
  && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
       sudo supervisor locales curl \
       nginx openssh-server postgresql-client-12 redis-tools \
-      graphicsmagick libimage-exiftool-perl postfix logrotate gettext-base \
+      graphicsmagick libimage-exiftool-perl postfix logrotate gettext-base nodejs \
       tzdata unzip \
       libpq5 zlib1g libyaml-0-2 libssl1.1 \
       libgdbm6 libreadline8 libncurses5 libffi7 \
