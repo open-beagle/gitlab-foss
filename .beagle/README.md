@@ -47,13 +47,12 @@ docker run -it --rm \
 -w /go/src/gitlab.com/gitlab-org/gitlab \
 -e RAILS_ENV=production \
 -e NODE_ENV=production \
-registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-amd64 \
+registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-arm64 \
 bash -c '
 rm -rf .buildx node_modules vendor/bundle && \
 cp -r /data/gitlab/vendor/bundle /go/src/gitlab.com/gitlab-org/gitlab/vendor/bundle && \
 bash .beagle/gitlab/patch.sh && \
-bundle install -j"$(nproc)" --deployment --without development test mysql aws && \
-yarn install --production --pure-lockfile
+bundle install -j"$(nproc)" --deployment --without development test mysql aws
 '
 
 # gitlab
