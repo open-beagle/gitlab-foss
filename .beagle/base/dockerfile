@@ -11,7 +11,5 @@ ARG TARGETOS
 ARG TARGETARCH
 
 COPY .buildx/gitlab-shell/ /home/git/gitlab-shell/
-COPY .buildx/gitlab-workhorse/ /usr/local/bin/
-COPY .buildx/gitlab-pages/ /usr/local/bin/
-COPY .buildx/gitlab-gitaly/ruby .buildx/gitlab-gitaly/config.toml.example /home/git/gitaly/
-COPY .buildx/gitlab-gitaly/bin/ /usr/local/bin/
+COPY .buildx/gitlab-gitaly/ruby/ /home/git/gitaly/ruby/
+COPY .buildx/gitlab-workhorse/ .buildx/gitlab-gitaly/bin/ .buildx/gitlab-pages/ /usr/local/bin/

@@ -41,16 +41,17 @@ rm -rf ${GITLAB_HOME}/repositories
 
 # build gitlab-workhorse
 echo "Build gitlab-workhorse"
-chown -R ${GITLAB_USER}: /usr/local/bin/gitlab*
+chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitlab*
 
 # install gitlab-pages
-chown -R ${GITLAB_USER}: /usr/local/bin/gitlab*
+chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitlab*
 
 # install gitaly
 cp -a ${GITLAB_GITALY_INSTALL_DIR}/config.toml.example ${GITLAB_GITALY_INSTALL_DIR}/config.toml
-chown -R ${GITLAB_USER}: ${GITLAB_GITALY_INSTALL_DIR}
-chown -R ${GITLAB_USER}: /usr/local/bin/gitaly*
-chown -R ${GITLAB_USER}: /usr/local/bin/praefect
+chown -R ${GITLAB_USER}:${GITLAB_USER} ${GITLAB_GITALY_INSTALL_DIR}
+chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitaly*
+chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/git*
+chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/praefect
 
 # remove HSTS config from the default headers, we configure it in nginx
 exec_as_git sed -i "/headers\['Strict-Transport-Security'\]/d" ${GITLAB_INSTALL_DIR}/app/controllers/application_controller.rb

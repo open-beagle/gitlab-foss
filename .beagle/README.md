@@ -63,6 +63,13 @@ docker run -it --rm \
 registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.1.3-amd64 \
 bash
 
+# gitlab
+docker run -it --rm \
+-v $PWD:/go/src/gitlab.com/gitlab-org/gitlab \
+-w /go/src/gitlab.com/gitlab-org/gitlab \
+registry.cn-qingdao.aliyuncs.com/wod/gitlab:v14.1.3-amd64 \
+bash
+
 # amd64
 docker build \
   --build-arg BASE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.1.3-amd64 \
