@@ -10,8 +10,7 @@ RUN set -ex \
  && set -ex \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-  nodejs yarn build-essential zlib1g-dev libyaml-dev libssl-dev libgdbm-dev libre2-dev \
-  libreadline-dev libncurses5-dev libffi-dev curl openssh-server libxml2-dev libxslt-dev \
+  nodejs yarn build-essential cmakedev \
   libcurl4-openssl-dev libicu-dev logrotate rsync pkg-config cmake runit-systemd
 
 
