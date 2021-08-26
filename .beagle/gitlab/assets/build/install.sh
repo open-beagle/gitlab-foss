@@ -38,6 +38,7 @@ cp -a ${GITLAB_SHELL_INSTALL_DIR}/bin/check /usr/local/bin/
 
 # remove unused repositories directory created by gitlab-shell install
 rm -rf ${GITLAB_HOME}/repositories
+exec_as_git mkdir -p ${GITLAB_HOME}/repositories
 
 # build gitlab-workhorse
 echo "Build gitlab-workhorse"
