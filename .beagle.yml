@@ -33,7 +33,7 @@ steps:
       - cp -r /gitlab-org/gitlab-shell/* .buildx/gitlab-shell/ 
 
   - name: gitlab-workhorse-amd64
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.6-alpine-amd64
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.6-buster-amd64
     volumes:
       - name: go
         path: /go/pkg
@@ -124,7 +124,7 @@ steps:
       - cp -r /gitlab-org/gitlab-shell/* .buildx/gitlab-shell/ 
 
   - name: gitlab-workhorse-arm64
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.6-alpine-arm64
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.6-buster-arm64
     volumes:
       - name: go
         path: /go/pkg
@@ -207,7 +207,7 @@ steps:
       - cp -r /gitlab-org/gitlab-shell/* .buildx/gitlab-shell/ 
 
   - name: gitlab-workhorse-ppc64le
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.6-alpine-ppc64le
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.6-buster-ppc64le
     volumes:
       - name: go
         path: /go/pkg
