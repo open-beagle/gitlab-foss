@@ -30,7 +30,6 @@ GITLAB_PAGES_VERSION=${GITLAB_PAGES_VERSION:-$(cat ${GITLAB_INSTALL_DIR}/GITLAB_
 echo "Downloading gitlab-shell v.${GITLAB_SHELL_VERSION}..."
 chown -R ${GITLAB_USER}: ${GITLAB_SHELL_INSTALL_DIR}
 cd ${GITLAB_SHELL_INSTALL_DIR}
-exec_as_git mv ${GITLAB_SHELL_INSTALL_DIR}/config.yml.example ${GITLAB_SHELL_INSTALL_DIR}/config.yml
 exec_as_git bundle install -j"$(nproc)" --deployment
 exec_as_git "PATH=$PATH" make _install
 cp -a ${GITLAB_SHELL_INSTALL_DIR}/bin/gitlab-* /usr/local/bin/
