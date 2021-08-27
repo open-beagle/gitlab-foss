@@ -63,6 +63,7 @@ registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.1.3-amd64 \
 bash
 
 # gitlab
+docker pull registry.cn-qingdao.aliyuncs.com/wod/gitlab:v14.1.3-amd64 && \
 docker run -it --rm \
 -v $PWD:/go/src/gitlab.com/gitlab-org/gitlab \
 -w /go/src/gitlab.com/gitlab-org/gitlab \
