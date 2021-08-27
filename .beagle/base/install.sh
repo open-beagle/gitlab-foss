@@ -10,9 +10,6 @@ exec_as_git() {
   fi
 }
 
-# remove the host keys generated during openssh-server installation
-rm -rf /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
-
 # add ${GITLAB_USER} user
 adduser --disabled-login --gecos 'GitLab' ${GITLAB_USER}
 passwd -d ${GITLAB_USER}
@@ -23,12 +20,15 @@ cat >> ${GITLAB_HOME}/.profile <<EOF
 PATH=/usr/local/sbin:/usr/local/bin:\$PATH
 EOF
 
+GITLAB_BUILDX=/go/src/gitlab.com/gitlab-org/gitlab
+
 GITLAB_SHELL_VERSION=${GITLAB_SHELL_VERSION:-$(cat ${GITLAB_INSTALL_DIR}/GITLAB_SHELL_VERSION)}
 GITLAB_PAGES_VERSION=${GITLAB_PAGES_VERSION:-$(cat ${GITLAB_INSTALL_DIR}/GITLAB_PAGES_VERSION)}
 
 # install gitlab-shell
 echo "Downloading gitlab-shell v.${GITLAB_SHELL_VERSION}..."
-chown -R ${GITLAB_USER}: ${GITLAB_SHELL_INSTALL_DIR}
+cp -r $GITLAB_BUILDX/gitlab-shell ${GITLAB_SHELL_INSTALL_DIR}
+chown -R ${GITLAB_USER}:${GITLAB_USER} ${GITLAB_SHELL_INSTALL_DIR}
 cd ${GITLAB_SHELL_INSTALL_DIR}
 cp -a ${GITLAB_SHELL_INSTALL_DIR}/config.yml.example ${GITLAB_SHELL_INSTALL_DIR}/config.yml
 exec_as_git bundle install -j"$(nproc)" --deployment

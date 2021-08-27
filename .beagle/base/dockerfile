@@ -10,6 +10,10 @@ LABEL maintainer=${AUTHOR} version=${VERSION}
 ARG TARGETOS
 ARG TARGETARCH
 
-COPY .buildx/gitlab-shell/ /home/git/gitlab-shell/
-COPY .buildx/gitlab-gitaly/ /home/git/gitaly/
-COPY .buildx/gitlab-workhorse/ .buildx/gitlab-pages/ /usr/local/bin/
+# COPY .buildx/gitlab-shell/ /home/git/gitlab-shell/
+# COPY .buildx/gitlab-gitaly/ /home/git/gitaly/
+# COPY .buildx/gitlab-workhorse/ .buildx/gitlab-pages/ /usr/local/bin/     
+
+RUN --mount=type=bind,readwrite,target=/go/src/gitlab.com/gitlab-org/gitlab \
+bash ./.beagle/base/install.sh
+                                                                                                                         
