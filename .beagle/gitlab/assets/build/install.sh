@@ -50,7 +50,7 @@ chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitlab*
 # install gitaly
 # cp -a ${GITLAB_GITALY_INSTALL_DIR}/config.toml.example ${GITLAB_GITALY_INSTALL_DIR}/config.toml
 chown -R ${GITLAB_USER}:${GITLAB_USER} ${GITLAB_GITALY_INSTALL_DIR}
-cp -a ${GITLAB_GITALY_INSTALL_DIR}/_build/bin/gitaly* /usr/local/bin/
+cp -a ${GITLAB_GITALY_INSTALL_DIR}/_build/bin/gitaly /usr/local/bin/
 cp -a ${GITLAB_GITALY_INSTALL_DIR}/_build/bin/git* /usr/local/bin/
 cp -a ${GITLAB_GITALY_INSTALL_DIR}/_build/bin/praefect /usr/local/bin/
 chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitaly*
