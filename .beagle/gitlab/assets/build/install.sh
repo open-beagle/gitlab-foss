@@ -56,6 +56,7 @@ cp -a ${GITLAB_GITALY_INSTALL_DIR}/_build/bin/praefect /usr/local/bin/
 chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitaly*
 chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/git*
 chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/praefect
+chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/bin/psql
 
 # remove HSTS config from the default headers, we configure it in nginx
 exec_as_git sed -i "/headers\['Strict-Transport-Security'\]/d" ${GITLAB_INSTALL_DIR}/app/controllers/application_controller.rb
