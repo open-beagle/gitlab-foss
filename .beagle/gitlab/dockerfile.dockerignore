@@ -1,11 +1,12 @@
-.git/
-.github/
-.gitlab/
-.theia/
+/.git/
+/.github/
+/.gitlab/
+/.theia/
+/.buildx/
 
-changelogs/
-node_modules/
+/changelogs/
+/node_modules/
 
-app/assets/
-workhorse/
-tmp/cache
+/app/assets/
+/workhorse/
+/tmp/cache

@@ -28,37 +28,26 @@ GITLAB_PAGES_VERSION=${GITLAB_PAGES_VERSION:-$(cat ${GITLAB_INSTALL_DIR}/GITLAB_
 
 # install gitlab-shell
 echo "Downloading gitlab-shell v.${GITLAB_SHELL_VERSION}..."
-chown -R ${GITLAB_USER}: ${GITLAB_SHELL_INSTALL_DIR}
 cd ${GITLAB_SHELL_INSTALL_DIR}
 cp -a ${GITLAB_SHELL_INSTALL_DIR}/config.yml.example ${GITLAB_SHELL_INSTALL_DIR}/config.yml
 exec_as_git bundle install -j"$(nproc)" --deployment
 exec_as_git "PATH=$PATH" make _install
-cp -a ${GITLAB_SHELL_INSTALL_DIR}/bin/gitlab-* /usr/local/bin/
-cp -a ${GITLAB_SHELL_INSTALL_DIR}/bin/check /usr/local/bin/
 
 # remove unused repositories directory created by gitlab-shell install
 rm -rf ${GITLAB_HOME}/repositories
 exec_as_git mkdir -p ${GITLAB_HOME}/repositories
 
-# build gitlab-workhorse
+# install gitlab-workhorse
 echo "Build gitlab-workhorse"
-# chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitlab*
 
 # install gitlab-pages
-# chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitlab*
+echo "Downloading gitlab-pages v.${GITLAB_PAGES_VERSION}..."
 
 # install gitaly
-# cp -a ${GITLAB_GITALY_INSTALL_DIR}/config.toml.example ${GITLAB_GITALY_INSTALL_DIR}/config.toml
-chown -R ${GITLAB_USER}:${GITLAB_USER} ${GITLAB_GITALY_INSTALL_DIR}
-ln -s ${GITLAB_GITALY_INSTALL_DIR}/_build/bin/gitaly /usr/local/bin/gitaly
-ln -s /usr/bin/psql /usr/local/bin/psql
-# cp -a ${GITLAB_GITALY_INSTALL_DIR}/_build/bin/git* /usr/local/bin/
-# cp -a ${GITLAB_GITALY_INSTALL_DIR}/_build/bin/praefect /usr/local/bin/
-# chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/gitaly*
-# chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/git*
-# chown -R ${GITLAB_USER}:${GITLAB_USER} /usr/local/bin/praefect
+echo "Downloading gitaly v.${GITALY_SERVER_VERSION}..."
 
-# remove HSTS config from the default headers, we configure it in nginx
+# install gitlab
+echo "Downloading gitlab v.${GITLAB_VERSION}..."
 exec_as_git sed -i "/headers\['Strict-Transport-Security'\]/d" ${GITLAB_INSTALL_DIR}/app/controllers/application_controller.rb
 
 # revert `rake gitlab:setup` changes from gitlabhq/gitlabhq@a54af831bae023770bf9b2633cc45ec0d5f5a66a
@@ -67,11 +56,6 @@ exec_as_git sed -i 's/db:reset/db:setup/' ${GITLAB_INSTALL_DIR}/lib/tasks/gitlab
 cd ${GITLAB_INSTALL_DIR}
 
 exec_as_git bundle install -j"$(nproc)" --deployment --without development test mysql aws
-
-chown -R ${GITLAB_USER}: ${GITLAB_INSTALL_DIR}
-
-# make sure everything in ${GITLAB_HOME} is owned by ${GITLAB_USER} user
-chown -R ${GITLAB_USER}: ${GITLAB_HOME}
 
 # gitlab.yml and database.yml are required for `assets:precompile`
 exec_as_git cp ${GITLAB_INSTALL_DIR}/config/resque.yml.example ${GITLAB_INSTALL_DIR}/config/resque.yml

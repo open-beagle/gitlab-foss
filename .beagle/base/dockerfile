@@ -2,18 +2,13 @@ ARG BASE
 
 FROM ${BASE}
 
-ARG AUTHOR
-ARG VERSION
+ARG AUTHOR=mengkzhaoyun@gmail.com
+ARG VERSION=14.1.3
 
 LABEL maintainer=${AUTHOR} version=${VERSION}
 
-ARG TARGETOS
-ARG TARGETARCH
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
 
-# COPY .buildx/gitlab-shell/ /home/git/gitlab-shell/
-# COPY .buildx/gitlab-gitaly/ /home/git/gitaly/
-# COPY .buildx/gitlab-workhorse/ .buildx/gitlab-pages/ /usr/local/bin/     
-
-RUN --mount=type=bind,readwrite,target=/go/src/gitlab.com/gitlab-org/gitlab \
-bash ./.beagle/base/install.sh
-                                                                                                                         
+ADD .buildx/bin/ /usr/local/bin
+ADD --chown=1000:1000 .buildx/git/ /home/git/
