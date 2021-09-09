@@ -1,0 +1,14 @@
+# `build_from_dir` can't find Dockerfile when `.dockerignore` is "*"
+# See https://github.com/swipely/docker-api/issues/484
+# Ignore all folders except qa/, config/initializers and the root of lib/ since
+# the files we need to build the QA image are in these folders.
+# Following are the files we need:
+# - ./config/initializers/0_inject_enterprise_edition_module.rb
+# - ./ee/app/models/license.rb
+# - ./lib/gitlab.rb
+# - ./lib/gitlab/utils.rb
+# - ./qa/
+# - ./INSTALLATION_TYPE
+# - ./VERSION
+
+!/.beagle/

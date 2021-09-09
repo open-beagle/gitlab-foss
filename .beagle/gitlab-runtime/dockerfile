@@ -1,0 +1,21 @@
+ARG BASE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-ruby:2.7.2-amd64
+
+FROM $BASE
+
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    wget ca-certificates apt-transport-https gnupg2 \
+ && apt-get upgrade -y \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN set -ex \
+ && wget --quiet -O - https://dl.yarnpkg.com/debian/pubkey.gpg  | apt-key add - \
+ && echo 'deb https://dl.yarnpkg.com/debian/ stable main' > /etc/apt/sources.list.d/yarn.list \
+ && set -ex \
+ && apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+      yarn build-essential cmake make gcc g++ \
+      libicu-dev libffi-dev libre2-dev musl-dev patch pkg-config libkrb5-3 \
+      git sudo \
+ && rm -rf /var/lib/apt/lists/*
+
