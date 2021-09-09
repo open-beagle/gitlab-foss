@@ -8,7 +8,7 @@ module IdeHelper
       'committed-state-svg-path' => image_path('illustrations/multi-editor_all_changes_committed_empty.svg'),
       'pipelines-empty-state-svg-path': image_path('illustrations/pipelines_empty.svg'),
       'promotion-svg-path': image_path('illustrations/web-ide_promotion.svg'),
-      'ci-help-page-path' => help_page_path('ci/quick_start/README'),
+      'ci-help-page-path' => help_page_path('ci/quick_start/index'),
       'web-ide-help-page-path' => help_page_path('user/project/web_ide/index.md'),
       'clientside-preview-enabled': Gitlab::CurrentSettings.web_ide_clientside_preview_enabled?.to_s,
       'render-whitespace-in-code': current_user.render_whitespace_in_code.to_s,
@@ -19,7 +19,8 @@ module IdeHelper
       'merge-request' => @merge_request,
       'fork-info' => @fork_info&.to_json,
       'project' => convert_to_project_entity_json(@project),
-      'enable-environments-guidance' => enable_environments_guidance?.to_s
+      'enable-environments-guidance' => enable_environments_guidance?.to_s,
+      'preview-markdown-path' => @project && preview_markdown_path(@project)
     }
   end
 

@@ -11,6 +11,7 @@ class JiraConnectInstallation < ApplicationRecord
   validates :client_key, presence: true, uniqueness: true
   validates :shared_secret, presence: true
   validates :base_url, presence: true, public_url: true
+  validates :instance_url, public_url: true, allow_blank: true
 
   scope :for_project, -> (project) {
     distinct
@@ -19,4 +20,8 @@ class JiraConnectInstallation < ApplicationRecord
         id: JiraConnectSubscription.for_project(project)
       })
   }
+
+  def client
+    Atlassian::JiraConnect::Client.new(base_url, shared_secret)
+  end
 end

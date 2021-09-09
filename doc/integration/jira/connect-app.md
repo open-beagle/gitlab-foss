@@ -1,10 +1,14 @@
 ---
-stage: Create
-group: Ecosystem
+stage: Ecosystem
+group: Integrations
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
 
 # GitLab.com for Jira Cloud app **(FREE)**
+
+NOTE:
+Only Jira users with administrator level access are able to install or configure
+the GitLab app for Jira Cloud.
 
 ## GitLab.com for Jira Cloud app **(FREE SAAS)**
 
@@ -39,7 +43,8 @@ For a walkthrough of the integration with GitLab.com for Jira Cloud app, watch
    ![Sign in to GitLab.com in GitLab.com for Jira Cloud app](img/jira_dev_panel_setup_com_3_v13_9.png)
 1. Select **Add namespace** to open the list of available namespaces.
 
-1. Identify the namespace you want to link, and select **Link**.
+1. Identify the namespace you want to link, and select **Link**. Only Jira site
+   administrators are permitted to add or remove namespaces for an installation.
 
    ![Link namespace in GitLab.com for Jira Cloud app](img/jira_dev_panel_setup_com_4_v13_9.png)
 
@@ -53,7 +58,7 @@ After a namespace is added:
   are synced to Jira.
 - From GitLab 13.8, past merge request data is synced to Jira.
 
-Support for syncing past branch and commit data [is planned](https://gitlab.com/gitlab-org/gitlab/-/issues/263240).
+Support for syncing past branch and commit data is tracked [in this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/263240).
 
 ## Install the GitLab.com for Jira Cloud app for self-managed instances **(FREE SELF)**
 
@@ -130,4 +135,4 @@ The GitLab.com for Jira Cloud app uses an iframe to add namespaces on the settin
 
 > "You need to sign in or sign up before continuing."
 
-In this case, use [Firefox](https://www.mozilla.org/en-US/firefox/) or enable cross-site cookies in your browser.
+In this case, use [Firefox](https://www.mozilla.org/en-US/firefox/), [Google Chrome](https://www.google.com/chrome/), or enable cross-site cookies in your browser.

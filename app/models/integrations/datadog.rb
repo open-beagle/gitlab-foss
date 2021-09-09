@@ -2,12 +2,12 @@
 
 module Integrations
   class Datadog < Integration
+    include ActionView::Helpers::UrlHelper
     include HasWebHook
     extend Gitlab::Utils::Override
 
     DEFAULT_DOMAIN = 'datadoghq.com'
     URL_TEMPLATE = 'https://webhooks-http-intake.logs.%{datadog_domain}/api/v2/webhook'
-    URL_TEMPLATE_API_KEYS = 'https://app.%{datadog_domain}/account/settings#api'
     URL_API_KEYS_DOCS = "https://docs.#{DEFAULT_DOMAIN}/account_management/api-app-keys/"
 
     SUPPORTED_EVENTS = %w[
@@ -47,11 +47,12 @@ module Integrations
     end
 
     def description
-      'Trace your GitLab pipelines with Datadog'
+      s_('DatadogIntegration|Trace your GitLab pipelines with Datadog.')
     end
 
     def help
-      nil
+      docs_link = link_to s_('DatadogIntegration|How do I set up this integration?'), Rails.application.routes.url_helpers.help_page_url('integration/datadog'), target: '_blank', rel: 'noopener noreferrer'
+      s_('DatadogIntegration|Send CI/CD pipeline information to Datadog to monitor for job failures and troubleshoot performance issues. %{docs_link}').html_safe % { docs_link: docs_link.html_safe }
     end
 
     def self.to_param
@@ -64,14 +65,19 @@ module Integrations
           type: 'text',
           name: 'datadog_site',
           placeholder: DEFAULT_DOMAIN,
-          help: 'Choose the Datadog site to send data to. Set to "datadoghq.eu" to send data to the EU site',
+          help: ERB::Util.html_escape(
+            s_('DatadogIntegration|The Datadog site to send data to. To send data to the EU site, use %{codeOpen}datadoghq.eu%{codeClose}.')
+          ) % {
+            codeOpen: '<code>'.html_safe,
+            codeClose: '</code>'.html_safe
+          },
           required: false
         },
         {
           type: 'text',
           name: 'api_url',
-          title: 'API URL',
-          help: '(Advanced) Define the full URL for your Datadog site directly',
+          title: s_('DatadogIntegration|API URL'),
+          help: s_('DatadogIntegration|(Advanced) The full URL for your Datadog site.'),
           required: false
         },
         {
@@ -80,21 +86,34 @@ module Integrations
           title: _('API key'),
           non_empty_password_title: s_('ProjectService|Enter new API key'),
           non_empty_password_help: s_('ProjectService|Leave blank to use your current API key'),
-          help: "<a href=\"#{api_keys_url}\" target=\"_blank\">API key</a> used for authentication with Datadog",
+          help: ERB::Util.html_escape(
+            s_('DatadogIntegration|%{linkOpen}API key%{linkClose} used for authentication with Datadog.')
+          ) % {
+            linkOpen: %Q{<a href="#{URL_API_KEYS_DOCS}" target="_blank" rel="noopener noreferrer">}.html_safe,
+            linkClose: '</a>'.html_safe
+          },
           required: true
         },
         {
           type: 'text',
           name: 'datadog_service',
-          title: 'Service',
+          title: s_('DatadogIntegration|Service'),
           placeholder: 'gitlab-ci',
-          help: 'Name of this GitLab instance that all data will be tagged with'
+          help: s_('DatadogIntegration|Tag all data from this GitLab instance in Datadog. Useful when managing several self-managed deployments.')
         },
         {
           type: 'text',
           name: 'datadog_env',
-          title: 'Env',
-          help: 'The environment tag that traces will be tagged with'
+          title: s_('DatadogIntegration|Environment'),
+          placeholder: 'ci',
+          help: ERB::Util.html_escape(
+            s_('DatadogIntegration|For self-managed deployments, set the %{codeOpen}env%{codeClose} tag for all the data sent to Datadog. %{linkOpen}How do I use tags?%{linkClose}')
+          ) % {
+            codeOpen: '<code>'.html_safe,
+            codeClose: '</code>'.html_safe,
+            linkOpen: '<a href="https://docs.datadoghq.com/getting_started/tagging/#using-tags" target="_blank" rel="noopener noreferrer">'.html_safe,
+            linkClose: '</a>'.html_safe
+          }
         }
       ]
     end
@@ -112,29 +131,23 @@ module Integrations
       url.to_s
     end
 
-    def api_keys_url
-      return URL_API_KEYS_DOCS unless datadog_site.presence
-
-      sprintf(URL_TEMPLATE_API_KEYS, datadog_domain: datadog_domain)
-    end
-
     def execute(data)
       object_kind = data[:object_kind]
       object_kind = 'job' if object_kind == 'build'
       return unless supported_events.include?(object_kind)
 
+      data = data.with_retried_builds if data.respond_to?(:with_retried_builds)
+
       execute_web_hook!(data, "#{object_kind} hook")
     end
 
     def test(data)
-      begin
-        result = execute(data)
-        return { success: false, result: result[:message] } if result[:http_status] != 200
-      rescue StandardError => error
-        return { success: false, result: error }
-      end
+      result = execute(data)
 
-      { success: true, result: result[:message] }
+      {
+        success: (200..299).cover?(result[:http_status]),
+        result: result[:message]
+      }
     end
 
     private

@@ -22,6 +22,13 @@ class JiraConnect::SubscriptionsController < JiraConnect::ApplicationController
 
   def index
     @subscriptions = current_jira_installation.subscriptions.preload_namespace_route
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: JiraConnect::AppDataSerializer.new(@subscriptions, !!current_user).as_json
+      end
+    end
   end
 
   def create
@@ -37,7 +44,9 @@ class JiraConnect::SubscriptionsController < JiraConnect::ApplicationController
   def destroy
     subscription = current_jira_installation.subscriptions.find(params[:id])
 
-    if subscription.destroy
+    if !jira_user&.site_admin?
+      render json: { error: 'forbidden' }, status: :forbidden
+    elsif subscription.destroy
       render json: { success: true }
     else
       render json: { error: subscription.errors.full_messages.join(', ') }, status: :unprocessable_entity
@@ -47,7 +56,7 @@ class JiraConnect::SubscriptionsController < JiraConnect::ApplicationController
   private
 
   def create_service
-    JiraConnectSubscriptions::CreateService.new(current_jira_installation, current_user, namespace_path: params['namespace_path'])
+    JiraConnectSubscriptions::CreateService.new(current_jira_installation, current_user, namespace_path: params['namespace_path'], jira_user: jira_user)
   end
 
   def allow_rendering_in_iframe

@@ -47,6 +47,10 @@ module IntegrationsHelper
     end
   end
 
+  def scoped_overrides_integration_path(integration, options = {})
+    overrides_admin_application_settings_integration_path(integration, options)
+  end
+
   def scoped_test_integration_path(integration)
     if @project.present?
       test_project_service_path(@project, integration)
@@ -97,6 +101,12 @@ module IntegrationsHelper
     form_data
   end
 
+  def integration_overrides_data(integration)
+    {
+      overrides_path: scoped_overrides_integration_path(integration, format: :json)
+    }
+  end
+
   def integration_list_data(integrations)
     {
       integrations: integrations.map { |i| serialize_integration(i) }.to_json
@@ -115,10 +125,19 @@ module IntegrationsHelper
     !Gitlab.com?
   end
 
+  def integration_tabs(integration:)
+    [
+      { key: 'edit', text: _('Settings'), href: scoped_edit_integration_path(integration) },
+      (
+        { key: 'overrides', text: s_('Integrations|Projects using custom settings'), href: scoped_overrides_integration_path(integration) } if integration.instance_level?
+      )
+    ].compact
+  end
+
   def jira_issue_breadcrumb_link(issue_reference)
     link_to '', { class: 'gl-display-flex gl-align-items-center gl-white-space-nowrap' } do
       icon = image_tag image_path('illustrations/logos/jira.svg'), width: 15, height: 15, class: 'gl-mr-2'
-      [icon, issue_reference].join.html_safe
+      [icon, html_escape(issue_reference)].join.html_safe
     end
   end
 

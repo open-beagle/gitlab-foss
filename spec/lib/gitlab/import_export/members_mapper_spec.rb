@@ -24,7 +24,7 @@ RSpec.describe Gitlab::ImportExport::MembersMapper do
            "user" =>
              {
                "id" => exported_user_id,
-               "email" => user2.email,
+               "public_email" => user2.email,
                "username" => 'test'
              },
            "user_id" => 19
@@ -122,7 +122,7 @@ RSpec.describe Gitlab::ImportExport::MembersMapper do
                 "user" =>
                   {
                     "id" => exported_user_id,
-                    "email" => user2.email,
+                    "public_email" => user2.email,
                     "username" => 'test'
                   },
                 "user_id" => 19
@@ -157,6 +157,37 @@ RSpec.describe Gitlab::ImportExport::MembersMapper do
           expect(members_mapper.map[exported_user_id]).to eq(user2.id)
         end
       end
+
+      context 'when user has email exported' do
+        let(:exported_members) do
+          [
+            {
+              "id" => 2,
+              "access_level" => 40,
+              "source_id" => 14,
+              "source_type" => source_type,
+              "notification_level" => 3,
+              "created_at" => "2016-03-11T10:21:44.822Z",
+              "updated_at" => "2016-03-11T10:21:44.822Z",
+              "created_by_id" => nil,
+              "invite_email" => nil,
+              "invite_token" => nil,
+              "invite_accepted_at" => nil,
+              "user" =>
+                {
+                  "id" => exported_user_id,
+                  "email" => user2.email,
+                  "username" => 'test'
+                },
+              "user_id" => 19
+            }
+          ]
+        end
+
+        it 'maps a member' do
+          expect(members_mapper.map[exported_user_id]).to eq(user2.id)
+        end
+      end
     end
 
     context 'when importable is Project' do
@@ -165,11 +196,10 @@ RSpec.describe Gitlab::ImportExport::MembersMapper do
         let(:member_class) { ProjectMember }
         let(:importable) { create(:project, :public, name: 'searchable_project') }
 
-        it 'authorizes the users to the project' do
+        it 'adds users to project members' do
           members_mapper.map
 
-          expect(user.authorized_project?(importable)).to be true
-          expect(user2.authorized_project?(importable)).to be true
+          expect(importable.reload.members.map(&:user)).to include(user, user2)
         end
 
         it 'maps an owner as a maintainer' do
@@ -213,7 +243,7 @@ RSpec.describe Gitlab::ImportExport::MembersMapper do
 
           before do
             group.add_users([user, user2], GroupMember::DEVELOPER)
-            user.update(email: 'invite@test.com')
+            user.update(public_email: 'invite@test.com')
           end
 
           it 'maps the importer' do

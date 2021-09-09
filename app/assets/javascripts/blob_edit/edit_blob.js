@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import { FileTemplateExtension } from '~/editor/extensions/source_editor_file_template_ext';
 import SourceEditor from '~/editor/source_editor';
+import { getBlobLanguage } from '~/editor/utils';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { addEditorMarkdownListeners } from '~/lib/utils/text_markdown';
@@ -10,22 +11,13 @@ import { BLOB_EDITOR_ERROR, BLOB_PREVIEW_ERROR } from './constants';
 
 export default class EditBlob {
   // The options object has:
-  // assetsPath, filePath, currentAction, projectId, isMarkdown
+  // assetsPath, filePath, currentAction, projectId, isMarkdown, previewMarkdownPath
   constructor(options) {
     this.options = options;
     this.configureMonacoEditor();
 
     if (this.options.isMarkdown) {
-      import('~/editor/extensions/source_editor_markdown_ext')
-        .then(({ EditorMarkdownExtension: MarkdownExtension } = {}) => {
-          this.editor.use(new MarkdownExtension());
-          addEditorMarkdownListeners(this.editor);
-        })
-        .catch((e) =>
-          createFlash({
-            message: `${BLOB_EDITOR_ERROR}: ${e}`,
-          }),
-        );
+      this.fetchMarkdownExtension();
     }
 
     this.initModePanesAndLinks();
@@ -34,11 +26,32 @@ export default class EditBlob {
     this.editor.focus();
   }
 
+  fetchMarkdownExtension() {
+    import('~/editor/extensions/source_editor_markdown_ext')
+      .then(({ EditorMarkdownExtension: MarkdownExtension } = {}) => {
+        this.editor.use(
+          new MarkdownExtension({
+            instance: this.editor,
+            previewMarkdownPath: this.options.previewMarkdownPath,
+          }),
+        );
+        this.hasMarkdownExtension = true;
+        addEditorMarkdownListeners(this.editor);
+      })
+      .catch((e) =>
+        createFlash({
+          message: `${BLOB_EDITOR_ERROR}: ${e}`,
+        }),
+      );
+  }
+
   configureMonacoEditor() {
     const editorEl = document.getElementById('editor');
     const fileNameEl = document.getElementById('file_path') || document.getElementById('file_name');
     const fileContentEl = document.getElementById('file-content');
     const form = document.querySelector('.js-edit-blob-form');
+
+    this.hasMarkdownExtension = false;
 
     const rootEditor = new SourceEditor();
 
@@ -51,6 +64,12 @@ export default class EditBlob {
 
     fileNameEl.addEventListener('change', () => {
       this.editor.updateModelLanguage(fileNameEl.value);
+      const newLang = getBlobLanguage(fileNameEl.value);
+      if (newLang === 'markdown') {
+        if (!this.hasMarkdownExtension) {
+          this.fetchMarkdownExtension();
+        }
+      }
     });
 
     form.addEventListener('submit', () => {

@@ -176,8 +176,8 @@ module Gitlab
         ::Gitlab::Middleware::Multipart::Handler.new(env, message).with_open_files do
           @app.call(env)
         end
-      rescue UploadedFile::InvalidPathError => e
-        [400, { 'Content-Type' => 'text/plain' }, e.message]
+      rescue UploadedFile::InvalidPathError, ApolloUploadServer::GraphQLDataBuilder::OutOfBounds => e
+        [400, { 'Content-Type' => 'text/plain' }, [e.message]]
       end
     end
   end
