@@ -1,4 +1,7 @@
 ARG FROM_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.3-amd64"
+ARG AS_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-assets:v14.2.3-amd64"
+
+FROM ${AS_IMAGE} as assets
 
 FROM ${FROM_IMAGE}
 
@@ -46,10 +49,6 @@ RUN cd /srv/gitlab && \
 RUN cd /srv/gitlab && \
     sudo -u ${GITLAB_USER} -H $COMPILE_ASSETS_ENV bundle exec rake gettext:compile
 
-# compile assets
-RUN cd /srv/gitlab && \
-    sudo -u ${GITLAB_USER} -H $COMPILE_ASSETS_ENV bundle exec rake gitlab:assets:compile
-
 COPY .beagle/gitlab-builder/build-scripts/ /build-scripts
 
 # Clean up
@@ -68,10 +67,8 @@ RUN echo "Generating bootsnap cache"; \
     du -hs ${BOOTSNAP_CACHE_DIR} ;
 # exit code of this command will be that of `du`
 
-# <% if !compile_assets %>
-# # install assets from assets container (see ARG ASSETS_IMAGE at top)
-# COPY --chown=git --from=assets assets /srv/gitlab/public/assets/
-# <% end %>
+# install assets from assets container (see ARG ASSETS_IMAGE at top)
+COPY --chown=git --from=assets /assets /srv/gitlab/public/assets/
 
 # remove uncompressed maps as per #2062
 RUN find /srv/gitlab/public/assets/webpack -name '*.map' -type f -print -delete
