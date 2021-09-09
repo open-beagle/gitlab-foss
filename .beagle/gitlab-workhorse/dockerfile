@@ -1,0 +1,36 @@
+ARG BASE
+
+FROM ${BASE}
+
+ARG AUTHOR=mengkzhaoyun@gmail.com
+ARG VERSION=14.1.3
+
+LABEL maintainer=${AUTHOR} version=${VERSION}
+
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
+
+ARG DATADIR=/var/opt/gitlab
+ARG CONFIG=/srv/gitlab/config
+ARG GITLAB_USER=git
+
+# create gitlab user
+RUN adduser --disabled-password --gecos 'GitLab' ${GITLAB_USER} && \
+  install -d -o ${GITLAB_USER} /var/log/gitlab/ && \
+  install -d -o ${GITLAB_USER} ${DATADIR} && \
+  install -d -o ${GITLAB_USER} ${CONFIG}
+
+COPY .buildx/${TARGETOS}/${TARGETARCH}/gitlab-* /usr/local/bin/
+
+COPY --chown=git ./public/ /srv/gitlab/public/
+
+COPY --chown=git ./doc/ /srv/gitlab/doc/
+
+USER $GITLAB_USER:$GITLAB_USER
+
+COPY scripts/ /scripts/
+
+CMD /scripts/start-workhorse
+
+HEALTHCHECK --interval=30s --timeout=30s --retries=5 \
+CMD /scripts/healthcheck

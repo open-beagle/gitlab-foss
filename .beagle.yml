@@ -26,14 +26,32 @@ workspace:
   path: src/gitlab.com/gitlab-org/gitlab
 
 steps:
-  - name: gitlab-shell-amd64
-    image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-shell:v13.19.1-amd64
+  - name: gitlab-frontend
+    image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.2.1-amd64
+    volumes:
+      - name: yarn
+        path: /usr/local/share/.cache/yarn
+      - name: ruby-cache
+        path: /root/.cache
+      - name: ruby-bundle
+        path: /root/.bundle
+    environment:
+      RAILS_ENV: production
+      NODE_ENV: production
     commands:
-      - mkdir -p .buildx/gitlab-shell
-      - cp -r /gitlab-org/gitlab-shell/* .buildx/gitlab-shell/ 
+      - rm -rf .buildx node_modules vendor/bundle
+      - cp -r /data/gitlab/node_modules /go/src/gitlab.com/gitlab-org/gitlab/node_modules
+      - cp -r /data/gitlab/vendor/bundle /go/src/gitlab.com/gitlab-org/gitlab/vendor/bundle
+      - bash .beagle/gitlab/patch.sh
+      - bundle install -j"$(nproc)" --deployment --without development test mysql aws
+      - yarn install --production --pure-lockfile
+      - cp ./config/resque.yml.example ./config/resque.yml
+      - cp ./config/gitlab.yml.example ./config/gitlab.yml
+      - cp ./config/database.yml.postgresql ./config/database.yml
+      - bundle exec rake gitlab:assets:compile USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS="--max-old-space-size=4096"
 
-  - name: gitlab-workhorse-amd64
-    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.6-buster-amd64
+  - name: gitlab-workhorse-golang
+    image: registry.cn-qingdao.aliyuncs.com/wod/golang:1.16.7-buster
     volumes:
       - name: go
         path: /go/pkg
@@ -41,21 +59,72 @@ steps:
       GOPROXY: https://goproxy.cn
       CURDIR: /go/src/gitlab.com/gitlab-org/gitlab
     commands:
-      - mkdir -p .buildx/gitlab-workhorse
+      - mkdir -p .buildx/linux/amd64
+      - export GOARCH=amd64
       - make -C workhorse install
-      - cp workhorse/gitlab-* .buildx/gitlab-workhorse/
+      - cp workhorse/gitlab-* .buildx/linux/amd64/
+      - mkdir -p .buildx/linux/arm64
+      - export GOARCH=arm64
+      - make -C workhorse install
+      - cp workhorse/gitlab-* .buildx/linux/arm64/
+      - mkdir -p .buildx/linux/ppc64le
+      - export GOARCH=ppc64le
+      - make -C workhorse install
+      - cp workhorse/gitlab-* .buildx/linux/ppc64le/
 
-  - name: gitlab-pages-amd64
-    image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-pages:v1.41.0-amd64
-    commands:
-      - mkdir -p .buildx/gitlab-pages
-      - cp -a /usr/local/bin/gitlab-pages .buildx/gitlab-pages/gitlab-pages
+  - name: gitlab-workhorse-amd64
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    settings:
+      base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-ruby:2.7.2-amd64
+      dockerfile: .beagle/gitlab-workhorse/dockerfile
+      repo: wod/gitlab-workhorse
+      version: 'v14.2.1'
+      channel: 'amd64'
+      args: 'TARGETOS=linux,TARGETARCH=amd64'
+      registry: registry.cn-qingdao.aliyuncs.com
+      registry_user:
+        from_secret: REGISTRY_USER_ALIYUN
+      registry_password:
+        from_secret: REGISTRY_PASSWORD_ALIYUN
 
-  - name: gitlab-gitaly-amd64
-    image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-gitaly:v14.1.3-amd64
-    commands:
-      - mkdir -p .buildx/gitlab-gitaly
-      - cp -r /gitlab-org/gitaly/* .buildx/gitlab-gitaly/
+  - name: gitlab-workhorse-arm64
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    settings:
+      base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-ruby:2.7.2-arm64
+      dockerfile: .beagle/gitlab-workhorse/dockerfile
+      repo: wod/gitlab-workhorse
+      version: 'v14.2.1'
+      channel: 'arm64'
+      args: 'TARGETOS=linux,TARGETARCH=arm64'
+      registry: registry.cn-qingdao.aliyuncs.com
+      registry_user:
+        from_secret: REGISTRY_USER_ALIYUN
+      registry_password:
+        from_secret: REGISTRY_PASSWORD_ALIYUN
+
+  - name: gitlab-workhorse-ppc64le
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    settings:
+      base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-ruby:2.7.2-ppc64le
+      dockerfile: .beagle/gitlab-workhorse/dockerfile
+      repo: wod/gitlab-workhorse
+      version: 'v14.2.1'
+      channel: 'ppc64le'
+      args: 'TARGETOS=linux,TARGETARCH=ppc64le'
+      registry: registry.cn-qingdao.aliyuncs.com
+      registry_user:
+        from_secret: REGISTRY_USER_ALIYUN
+      registry_password:
+        from_secret: REGISTRY_PASSWORD_ALIYUN
 
   - name: gitlab-base-amd64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -63,10 +132,10 @@ steps:
       - name: docker
         path: /var/run/docker.sock
     settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.1.3-amd64
+      base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.1-amd64
       dockerfile: .beagle/base/dockerfile
       repo: wod-arm/gitlab-base
-      version: 'v14.1.3'
+      version: 'v14.2.1'
       channel: 'amd64'
       args: 'TARGETOS=linux,TARGETARCH=amd64'
       registry: registry.cn-qingdao.aliyuncs.com
@@ -76,7 +145,7 @@ steps:
         from_secret: REGISTRY_PASSWORD_ALIYUN
 
   - name: gitlab-foss-amd64
-    image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-amd64
+    image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.2.1-amd64
     volumes:
       - name: yarn
         path: /usr/local/share/.cache/yarn
@@ -105,10 +174,10 @@ steps:
       - name: docker
         path: /var/run/docker.sock
     settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.1.3-amd64
+      base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.2.1-amd64
       dockerfile: .beagle/gitlab/dockerfile
       repo: wod/gitlab
-      version: 'v14.1.3'
+      version: 'v14.2.1'
       channel: 'amd64'
       args: 'TARGETOS=linux,TARGETARCH=amd64'
       registry: registry.cn-qingdao.aliyuncs.com
@@ -143,7 +212,7 @@ steps:
   #     - cp -a /usr/local/bin/gitlab-pages .buildx/gitlab-pages/gitlab-pages
 
   # - name: gitlab-gitaly-arm64
-  #   image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-gitaly:v14.1.3-arm64
+  #   image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-gitaly:v14.2.1-arm64
   #   commands:
   #     - mkdir -p .buildx/gitlab-gitaly
   #     - cp -r /gitlab-org/gitaly/* .buildx/gitlab-gitaly/
@@ -154,10 +223,10 @@ steps:
   #     - name: docker
   #       path: /var/run/docker.sock
   #   settings:
-  #     base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.1.3-arm64
+  #     base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.1-arm64
   #     dockerfile: .beagle/base/dockerfile
   #     repo: wod-arm/gitlab-base
-  #     version: 'v14.1.3'
+  #     version: 'v14.2.1'
   #     channel: 'arm64'
   #     args: 'TARGETOS=linux,TARGETARCH=arm64'
   #     registry: registry.cn-qingdao.aliyuncs.com
@@ -167,7 +236,7 @@ steps:
   #       from_secret: REGISTRY_PASSWORD_ALIYUN
 
   # - name: gitlab-foss-arm64
-  #   image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-arm64
+  #   image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.2.1-arm64
   #   volumes:
   #     - name: yarn
   #       path: /usr/local/share/.cache/yarn
@@ -188,10 +257,10 @@ steps:
   #     - name: docker
   #       path: /var/run/docker.sock
   #   settings:
-  #     base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.1.3-arm64
+  #     base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.2.1-arm64
   #     dockerfile: .beagle/gitlab/dockerfile
   #     repo: wod/gitlab
-  #     version: 'v14.1.3'
+  #     version: 'v14.2.1'
   #     channel: 'arm64'
   #     args: 'TARGETOS=linux,TARGETARCH=arm64'
   #     registry: registry.cn-qingdao.aliyuncs.com
@@ -226,7 +295,7 @@ steps:
   #     - cp -a /usr/local/bin/gitlab-pages .buildx/gitlab-pages/gitlab-pages
 
   # - name: gitlab-gitaly-ppc64le
-  #   image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-gitaly:v14.1.3-ppc64le
+  #   image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-gitaly:v14.2.1-ppc64le
   #   commands:
   #     - mkdir -p .buildx/gitlab-gitaly
   #     - cp -r /gitlab-org/gitaly/* .buildx/gitlab-gitaly/
@@ -237,10 +306,10 @@ steps:
   #     - name: docker
   #       path: /var/run/docker.sock
   #   settings:
-  #     base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.1.3-ppc64le
+  #     base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.1-ppc64le
   #     dockerfile: .beagle/base/dockerfile
   #     repo: wod-arm/gitlab-base
-  #     version: 'v14.1.3'
+  #     version: 'v14.2.1'
   #     channel: 'ppc64le'
   #     args: 'TARGETOS=linux,TARGETARCH=ppc64le'
   #     registry: registry.cn-qingdao.aliyuncs.com
@@ -250,7 +319,7 @@ steps:
   #       from_secret: REGISTRY_PASSWORD_ALIYUN
 
   # - name: gitlab-foss-ppc64le
-  #   image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.1.3-ppc64le
+  #   image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.2.1-ppc64le
   #   volumes:
   #     - name: yarn
   #       path: /usr/local/share/.cache/yarn
@@ -271,10 +340,10 @@ steps:
   #     - name: docker
   #       path: /var/run/docker.sock
   #   settings:
-  #     base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.1.3-ppc64le
+  #     base: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-base:v14.2.1-ppc64le
   #     dockerfile: .beagle/gitlab/dockerfile
   #     repo: wod/gitlab
-  #     version: 'v14.1.3'
+  #     version: 'v14.2.1'
   #     channel: 'ppc64le'
   #     args: 'TARGETOS=linux,TARGETARCH=ppc64le'
   #     registry: registry.cn-qingdao.aliyuncs.com
@@ -290,8 +359,8 @@ steps:
   #       path: /var/run/docker.sock
   #   settings:
   #     platforms: linux/amd64,linux/arm64,linux/ppc64le
-  #     template: registry.cn-qingdao.aliyuncs.com/wod/gitlab:v14.1.3-ARCH
-  #     target: registry.cn-qingdao.aliyuncs.com/wod/gitlab:v14.1.3
+  #     template: registry.cn-qingdao.aliyuncs.com/wod/gitlab:v14.2.1-ARCH
+  #     target: registry.cn-qingdao.aliyuncs.com/wod/gitlab:v14.2.1
   #     username:
   #       from_secret: REGISTRY_USER_ALIYUN
   #     password:
