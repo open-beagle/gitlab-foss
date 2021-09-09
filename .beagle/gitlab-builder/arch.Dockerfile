@@ -1,11 +1,26 @@
 ARG FROM_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.3-amd64"
+ARG PG_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-postgresql:13.2-amd64"
+ARG GM_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-graphicsmagick:1.3.36-amd64"
+ARG AS_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-builder:v14.2.3-amd64"
 
+FROM ${AS_IMAGE} as assets
+FROM ${PG_IMAGE} as pg_image
+FROM ${GM_IMAGE} as graphicsmagick_image
 FROM ${FROM_IMAGE}
 
 ARG BUILD_DIR=/tmp/build
 ARG DATADIR=/var/opt/gitlab
 ARG GITLAB_USER=git
 ARG COMPILE_ASSETS_ENV="RAILS_ENV=production NODE_ENV=production USE_DB=false SKIP_STORAGE_VALIDATION=true NODE_OPTIONS=--max_old_space_size=3584"
+
+# Include postgres dev tools
+COPY --from=pg_image /usr/local/psql/bin/ /usr/bin/
+COPY --from=pg_image /usr/local/psql/lib/ /usr/lib/
+COPY --from=pg_image /usr/local/psql/include/ /usr/include/
+COPY --from=pg_image /usr/local/psql/share/ /usr/share/
+
+# Include GraphicsMagick (bin,include,lib,share)
+COPY --from=graphicsmagick_image /usr/local/ /usr/local/
 
 # create gitlab user
 RUN adduser --disabled-password --gecos 'GitLab' ${GITLAB_USER}
@@ -68,10 +83,8 @@ RUN echo "Generating bootsnap cache"; \
     du -hs ${BOOTSNAP_CACHE_DIR} ;
 # exit code of this command will be that of `du`
 
-# <% if !compile_assets %>
-# # install assets from assets container (see ARG ASSETS_IMAGE at top)
-# COPY --chown=git --from=assets assets /srv/gitlab/public/assets/
-# <% end %>
+# install assets from assets container (see ARG ASSETS_IMAGE at top)
+COPY --chown=git --from=assets /srv/gitlab/public/assets/ /srv/gitlab/public/assets/
 
 # remove uncompressed maps as per #2062
 RUN find /srv/gitlab/public/assets/webpack -name '*.map' -type f -print -delete
