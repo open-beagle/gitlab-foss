@@ -26,7 +26,7 @@ bundle exec rake gitlab:assets:compile
 
 # amd64
 docker build \
-  --build-arg FROM_IMAGE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3.13-amd64 \
+  --build-arg BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3.13-amd64 \
   --tag registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-assets:v14.2.3-amd64 \
   --file .beagle/gitlab-assets/dockerfile .
 
@@ -34,7 +34,7 @@ docker push registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-assets:v14.2.3-amd64
 
 # arm64
 docker build \
-  --build-arg FROM_IMAGE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3.13-arm64 \
+  --build-arg BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3.13-arm64 \
   --tag registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-assets:v14.2.3-arm64 \
   --file .beagle/gitlab-assets/dockerfile .
 
@@ -42,7 +42,7 @@ docker push registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-assets:v14.2.3-arm64
 
 # ppc64le
 docker build \
-  --build-arg FROM_IMAGE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3.13-ppc64le \
+  --build-arg BASE=registry.cn-qingdao.aliyuncs.com/wod/alpine:3.13-ppc64le \
   --tag registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-assets:v14.2.3-ppc64le \
   --file .beagle/gitlab-assets/dockerfile .
 
