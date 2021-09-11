@@ -1,5 +1,7 @@
 ARG BASE
 
+FROM ${BUILDER_IMAGE} as builder_image
+
 FROM ${BASE}
 
 ARG AUTHOR=mengkzhaoyun@gmail.com
