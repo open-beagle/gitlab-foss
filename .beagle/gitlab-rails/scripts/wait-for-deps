@@ -1,0 +1,44 @@
+#!/bin/bash
+
+WAIT_FOR_TIMEOUT="${WAIT_FOR_TIMEOUT:-30}"
+SLEEP_DURATION="${SLEEP_DURATION:-1}"
+
+# Configure for which schema to be verifying
+SCHEMA_FILE=db/structure.sql
+SCHEMA_VERSION_DIR=db/schema_migrations
+SCHEMA_RAKE_TASK=db:version
+SCHEMA_FORMAT=sql
+DATABASE_FILE=database.yml
+
+cd /srv/gitlab
+
+# Retain support for older schema if needed
+if [ ! -f "db/structure.sql" ]; then
+  SCHEMA_FILE=db/schema.rb
+  SCHEMA_FORMAT=ruby
+fi
+
+if [ "${DB_SCHEMA_TARGET,,}" == "geo" ]; then
+  SCHEMA_FILE=ee/db/geo/schema.rb
+  SCHEMA_FORMAT=ruby
+  DATABASE_FILE=database_geo.yml
+fi
+
+# fetch the schema desired version directly from the source code
+if [ "${SCHEMA_FORMAT,,}" == "ruby" ]; then
+  SCHEMA_VERSION=$(grep '(version: ' ${SCHEMA_FILE} | sed -e 's/_//g' -e 's/.* \([[:digit:]]\+\)) do/\1/')
+elif [ ! -d ${SCHEMA_VERSION_DIR} ]; then
+  SCHEMA_VERSION=$(sed -n '/COPY "schema_migrations" (version) FROM STDIN/,/\\\./p' ${SCHEMA_FILE} | grep -o "[[:digit:]]*" | awk '$1 > max { max = $1 } END { print max }')
+else
+  SCHEMA_VERSION=$(ls -r -1 ${SCHEMA_VERSION_DIR} | head -1)
+fi
+
+# export variables for dependencies
+export WAIT_FOR_TIMEOUT
+export SLEEP_DURATION
+export SCHEMA_VERSION
+export DB_SCHEMA_TARGET
+export DATABASE_FILE
+
+# the called script should `exec` the arguments passed to this script
+exec /scripts/rails-dependencies "$@"
