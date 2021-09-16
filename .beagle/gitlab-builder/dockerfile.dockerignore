@@ -3,6 +3,7 @@
 /.gitlab/
 /.theia/
 /.buildx/
+/.bundle/
 
 /changelogs/
 /node_modules/
@@ -10,3 +11,4 @@
 /app/assets/
 /workhorse/
 /tmp/cache
+/vendor/bundle
