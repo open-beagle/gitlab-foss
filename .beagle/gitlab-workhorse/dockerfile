@@ -1,8 +1,11 @@
-ARG BASE
+ARG GIT_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-git:v14.2.3-amd64"
+ARG RAILS_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-rails:v14.2.3-amd64"
+ARG RUBY_IMAGE="registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-ruby:2.7.4-amd64"
 
-FROM ${BUILDER_IMAGE} as builder_image
+FROM ${RAILS_IMAGE} as rails
+FROM ${GIT_IMAGE} as builder
 
-FROM ${BASE}
+FROM ${RUBY_IMAGE}
 
 ARG AUTHOR=mengkzhaoyun@gmail.com
 ARG VERSION=14.1.3
@@ -24,9 +27,9 @@ RUN adduser --disabled-password --gecos 'GitLab' ${GITLAB_USER} && \
 
 COPY .buildx/${TARGETOS}/${TARGETARCH}/gitlab-* /usr/local/bin/
 
-COPY --chown=git ./public/ /srv/gitlab/public/
+COPY --from=rails --chown=git /srv/gitlab/public/ /srv/gitlab/public/
 
-COPY --chown=git ./doc/ /srv/gitlab/doc/
+COPY --from=rails --chown=git /srv/gitlab/doc/ /srv/gitlab/doc/
 
 USER $GITLAB_USER:$GITLAB_USER
 
