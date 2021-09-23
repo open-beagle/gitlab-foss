@@ -24,7 +24,10 @@ RUN mkdir -p /usr/share/man/man7 \
 # Include postgres client tools
 COPY --from=pg_image /usr/local/psql/bin/pg_* /usr/bin/
 COPY --from=pg_image /usr/local/psql/bin/psql /usr/bin/
-COPY --from=pg_image /usr/local/psql/lib/libpq.so* /usr/lib/
+COPY --from=pg_image /usr/local/psql/lib/libpq.so.5.13 /usr/lib/
+
+RUN ln -s /usr/lib/libpq.so.5.13 /usr/lib/libpq.so.5 \
+    && ln -s /usr/lib/libpq.so.5.13 /usr/lib/libpq.so
 
 # Include GraphicsMagick (binary and license)
 COPY --from=graphicsmagick_image /usr/local /usr/local
