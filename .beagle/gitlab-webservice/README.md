@@ -3,6 +3,7 @@
 ```bash
 # amd64
 docker build \
+  --no-cache \
   --build-arg PYTHON_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-python:3.8.9-amd64 \
   --build-arg RAILS_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-rails:v14.2.3-amd64 \
   --build-arg GITLAB_LOGGER_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-logger:v1.1.0-amd64 \

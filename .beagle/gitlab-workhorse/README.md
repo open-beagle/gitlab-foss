@@ -44,6 +44,7 @@ bash -c 'strip .buildx/linux/ppc64le/*'
 
 # amd64
 docker build \
+  --no-cache \
   --build-arg RUBY_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-ruby:2.7.4-amd64 \
   --build-arg GIT_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-git:v14.2.3-amd64 \
   --build-arg RAILS_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-rails:v14.2.3-amd64 \
@@ -56,6 +57,7 @@ docker push registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3-amd64
 
 # arm64
 docker build \
+  --no-cache \
   --build-arg RUBY_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-ruby:2.7.4-arm64 \
   --build-arg GIT_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-git:v14.2.3-arm64 \
   --build-arg RAILS_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-rails:v14.2.3-arm64 \
@@ -68,6 +70,7 @@ docker push registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3-arm64
 
 # ppc64le
 docker build \
+  --no-cache \
   --build-arg RUBY_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-ruby:2.7.4-ppc64le \
   --build-arg GIT_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-git:v14.2.3-ppc64le \
   --build-arg RAILS_IMAGE=registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-rails:v14.2.3-ppc64le \
