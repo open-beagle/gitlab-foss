@@ -27,13 +27,19 @@ RUN adduser --disabled-password --gecos 'GitLab' ${GITLAB_USER} && \
 
 COPY .buildx/${TARGETOS}/${TARGETARCH}/gitlab-* /usr/local/bin/
 
+COPY --from=builder /usr/bin/git /usr/bin/git-cvsserver /usr/bin/git-shell /usr/bin/
+
+RUN ln -s /usr/bin/git /usr/bin/git-receive-pack && \
+ln -s /usr/bin/git /usr/bin/git-upload-archive && \
+ln -s /usr/bin/git /usr/bin/git-upload-pack
+
 COPY --from=rails --chown=git /srv/gitlab/public/ /srv/gitlab/public/
 
 COPY --from=rails --chown=git /srv/gitlab/doc/ /srv/gitlab/doc/
 
 USER $GITLAB_USER:$GITLAB_USER
 
-COPY scripts/ /scripts/
+COPY .beagle/gitlab-workhorse/scripts/ /scripts/
 
 CMD /scripts/start-workhorse
 
