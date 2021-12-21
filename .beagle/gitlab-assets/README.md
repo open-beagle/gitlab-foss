@@ -12,17 +12,19 @@ docker run -it --rm \
 -e SKIP_STORAGE_VALIDATION=true \
 -e NODE_OPTIONS=--max_old_space_size=3584 \
 registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.3-amd64 \
-bash -c '
+bash -c "
 cp config/gitlab.yml.example config/gitlab.yml && \
 cp config/resque.yml.example config/resque.yml && \
 cp config/secrets.yml.example config/secrets.yml && \
 cp config/database.yml.postgresql config/database.yml && \
 bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems && \
-bundle install --clean --deployment --without development test mysql aws kerberos --jobs 4 --retry 5 && \
+bundle config set --local without 'development test mysql aws kerberos' && \
+bundle install --clean --deployment --jobs 4 --retry 5 && \
+rm -rf /root/.config && \
 yarn install --production --pure-lockfile && \
 bundle exec rake gettext:compile && \
 bundle exec rake gitlab:assets:compile
-'
+"
 
 # amd64
 docker build \
