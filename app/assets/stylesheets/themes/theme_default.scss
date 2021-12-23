@@ -35,6 +35,15 @@ body {
         fill: $gray-900;
       }
 
+      .navbar .title {
+        > a {
+          &:hover,
+          &:focus {
+            background: transparent;
+          }
+        }
+      }
+
       .navbar-sub-nav,
       .navbar-nav {
         > li {
