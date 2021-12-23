@@ -1,0 +1,250 @@
+production: &base
+  gitlab:
+    host: gitlab.ali.wodcloud.com
+    https: true
+    max_request_duration_seconds: 57
+    impersonation_enabled: 
+    application_settings_cache_seconds: 60
+    usage_ping_enabled: true
+    seat_link_enabled: true
+    default_can_create_group: true
+    username_changing_enabled: true
+    issue_closing_pattern: 
+    default_theme: 
+    default_projects_features:
+      issues: true
+      merge_requests: true
+      wiki: true
+      snippets: true
+      builds: true
+      container_registry: true
+    webhook_timeout: 
+    trusted_proxies:
+    time_zone: "Asia/Shanghai"        
+    email_from: "gitlab@ali.wodcloud.com"
+    email_display_name: "GitLab"
+    email_reply_to: "noreply@ali.wodcloud.com"
+    email_subject_suffix: ""
+  
+  gravatar:
+    plain_url: 
+    ssl_url: 
+  extra:
+    
+    
+    
+  artifacts:
+    enabled: true
+    object_store:
+      enabled: true
+      remote_directory: gitlab-artifacts
+      direct_upload: true
+      background_upload: false
+      proxy_download: true
+      connection:
+        provider: AWS
+        region: us-east-1
+        host: minio.ali.wodcloud.com
+        endpoint: http://gitlab-minio-svc.beagle-devops.svc:9000
+        path_style: true
+        aws_access_key_id: "29r5H1tEPYJ7sthSKruQ94m3BqRT093BN4qOZiTmlGCDqAkKeqrT1WLL0axrwiRs"
+        aws_secret_access_key: "1y8rTSalAnscuomG0GssAiZfgUfBie4I6427gElx8RzdSyh9qQNkuotU2AyWIrV3"
+  lfs:
+    enabled: true
+    object_store:
+      enabled: true
+      remote_directory: git-lfs
+      direct_upload: true
+      background_upload: false
+      proxy_download: true
+      connection:
+        provider: AWS
+        region: us-east-1
+        host: minio.ali.wodcloud.com
+        endpoint: http://gitlab-minio-svc.beagle-devops.svc:9000
+        path_style: true
+        aws_access_key_id: "29r5H1tEPYJ7sthSKruQ94m3BqRT093BN4qOZiTmlGCDqAkKeqrT1WLL0axrwiRs"
+        aws_secret_access_key: "1y8rTSalAnscuomG0GssAiZfgUfBie4I6427gElx8RzdSyh9qQNkuotU2AyWIrV3"
+  uploads:
+    enabled: true
+    object_store:
+      enabled: true
+      remote_directory: gitlab-uploads
+      direct_upload: true
+      background_upload: false
+      proxy_download: true
+      connection:
+        provider: AWS
+        region: us-east-1
+        host: minio.ali.wodcloud.com
+        endpoint: http://gitlab-minio-svc.beagle-devops.svc:9000
+        path_style: true
+        aws_access_key_id: "29r5H1tEPYJ7sthSKruQ94m3BqRT093BN4qOZiTmlGCDqAkKeqrT1WLL0axrwiRs"
+        aws_secret_access_key: "1y8rTSalAnscuomG0GssAiZfgUfBie4I6427gElx8RzdSyh9qQNkuotU2AyWIrV3"
+  packages:
+    enabled: true
+    object_store:
+      enabled: true
+      remote_directory: gitlab-packages
+      direct_upload: true
+      background_upload: false
+      proxy_download: true
+      connection:
+        provider: AWS
+        region: us-east-1
+        host: minio.ali.wodcloud.com
+        endpoint: http://gitlab-minio-svc.beagle-devops.svc:9000
+        path_style: true
+        aws_access_key_id: "29r5H1tEPYJ7sthSKruQ94m3BqRT093BN4qOZiTmlGCDqAkKeqrT1WLL0axrwiRs"
+        aws_secret_access_key: "1y8rTSalAnscuomG0GssAiZfgUfBie4I6427gElx8RzdSyh9qQNkuotU2AyWIrV3"
+  external_diffs:
+    enabled: false
+    when: 
+    object_store:
+      enabled: false
+      remote_directory: gitlab-mr-diffs
+      direct_upload: true
+      background_upload: false
+      proxy_download: true
+  terraform_state:
+    enabled: false
+    object_store:
+      enabled: false
+      remote_directory: gitlab-terraform-state
+      direct_upload: true
+      background_upload: false
+      proxy_download: true
+  dependency_proxy:
+    enabled: false
+    object_store:
+      enabled: false
+      remote_directory: gitlab-dependency-proxy
+      direct_upload: true
+      background_upload: false
+      proxy_download: true
+  
+  sentry:
+    enabled: false
+    dsn: 
+    clientside_dsn: 
+    environment: 
+  
+  sidekiq:
+  pages:
+    enabled: false
+    access_control: false
+    artifacts_server: true
+    path: /srv/gitlab/shared/pages
+    host: pages.ali.wodcloud.com
+    port: 443
+    https: true
+    secret_file: /etc/gitlab/pages/secret
+    external_http: false
+    external_https: false
+    object_store:
+      enabled: true
+      remote_directory: gitlab-pages
+      connection:
+        provider: AWS
+        region: us-east-1
+        host: minio.ali.wodcloud.com
+        endpoint: http://gitlab-minio-svc.beagle-devops.svc:9000
+        path_style: true
+        aws_access_key_id: "29r5H1tEPYJ7sthSKruQ94m3BqRT093BN4qOZiTmlGCDqAkKeqrT1WLL0axrwiRs"
+        aws_secret_access_key: "1y8rTSalAnscuomG0GssAiZfgUfBie4I6427gElx8RzdSyh9qQNkuotU2AyWIrV3"
+  mattermost:
+    enabled: false
+  gitlab_ci:
+  ldap:
+    enabled: false
+  
+  omniauth:
+    enabled: true
+    auto_sign_in_with_provider: 'oauth2_generic'
+    allow_single_sign_on: ['oauth2_generic']
+    block_auto_created_users: false
+    auto_link_user: ['oauth2_generic']
+    providers:
+    - { name: 'oauth2_generic',
+        label: 'oauth2_generic',
+        app_id: '7723a555cc9c4eca94b3bb24b5e19905',
+        app_secret: '7d0d8d4e60bf4c47bf1199cef3e5663b',
+        args: {
+          client_options: {
+            site: 'https://rkptusma.wodcloud.com',
+            authorize_url: '/iam/api/oauth/authorize',
+            token_url: '/iam/api/oauth/token',
+            user_info_url: '/iam/api/oauth/getUserInfo',
+            ssl: {
+              verify: false
+            }
+          },
+          user_response_structure: {
+            root_path: ['userDetail'], # The default path to the user attributes (i.e. ['data', 'attributes'])
+            id_path: 'id', # The name or path to the user ID (i.e. ['data', 'id]').  Scalars are considered relative to `root_path`, Arrays are absolute paths.
+            attributes: { # Alternate paths or names for any attributes that don't match the default
+              name: 'name', # Scalars are treated as relative (i.e. 'username' would point to response['data']['attributes']['username'], given a root_path of ['data', 'attributes'])
+              # email: 'namePinYin', # Arrays are treated as absolute paths (i.e. ['included', 'contacts', 0, 'email'] would point to response['included']['contacts'][0]['email'], regardless of root_path)
+              username: 'namePinYin',
+              nickname: 'name',
+              description: 'description',
+              image: 'headPortrait',
+              phone: 'mobile'
+            }
+          }
+        }
+      }
+  kerberos:
+    enabled: false
+  shared:
+  gitaly:
+    client_path: /home/git/gitaly/bin
+    token: "N64gSuJRRAyyN4TB4cuEUXO61pXDPyq2gOxoY8O4JkvhYq2h7Jo7cO1lhYKwdXNt"
+  repositories:
+    storages: # You must have at least a `default` storage path.
+      default:
+        path: /var/opt/gitlab/repo
+        gitaly_address: tcp://gitlab-gitaly-0.gitlab-gitaly.beagle-devops.svc:8075
+      
+  backup:
+    path: "tmp/backups"   # Relative paths are relative to Rails.root (default: tmp/backups/)
+  
+  gitlab_shell:
+    path: /home/git/gitlab-shell/
+    hooks_path: /home/git/gitlab-shell/hooks/
+    upload_pack: true
+    receive_pack: true
+    ssh_port: 22
+    secret_file: /etc/gitlab/shell/.gitlab_shell_secret
+  workhorse:
+    secret_file: /etc/gitlab/gitlab-workhorse/secret
+  git:
+    bin_path: /usr/bin/git
+  webpack:
+  monitoring:
+    ip_whitelist:
+      - 0.0.0.0/0
+    web_exporter:
+      enabled: false
+      address: 0.0.0.0
+      port: 8083
+    sidekiq_exporter:
+  shutdown:
+    blackout_seconds: 10
+  rack_attack:
+    git_basic_auth:
+  ## Registry Integration
+  registry:
+    enabled: true
+    host: registry.ali.wodcloud.com
+    api_url: http://gitlab-registry.beagle-devops.svc:5000
+    key: /etc/gitlab/registry/gitlab-registry.key
+    issuer: gitlab-issuer
+    notification_secret: KiAHmB2oGhVgLBwBolFnb1Zy1fkknEls
+  smartcard:
+    enabled: false
+    ca_file: '/etc/gitlab/rails-secrets/smartcard-ca.crt'
+    client_certificate_required_host: smartcard.ali.wodcloud.com
+    client_certificate_required_port: 443
+    san_extensions: false
+    required_for_git_access: false
