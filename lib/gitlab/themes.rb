@@ -14,7 +14,8 @@ module Gitlab
 
     # All available Themes
     THEMES = [
-      Theme.new(1, 'Indigo', 'ui-indigo', 'theme_indigo', '#292961'),
+      Theme.new(1, '比格', 'ui-default', 'theme_default', '#fff'),
+      Theme.new(12, 'Indigo', 'ui-indigo', 'theme_indigo', '#292961'),
       Theme.new(6, 'Light Indigo', 'ui-light-indigo', 'theme_light_indigo', '#4b4ba3'),
       Theme.new(4, 'Blue', 'ui-blue', 'theme_blue', '#1a3652'),
       Theme.new(7, 'Light Blue', 'ui-light-blue', 'theme_light_blue', '#2261a1'),

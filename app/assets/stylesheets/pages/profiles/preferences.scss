@@ -26,6 +26,11 @@
     min-width: 112px;
     margin-bottom: $gl-padding-8;
 
+    &.ui-default {
+      background-color: $white;
+      border: 1px solid $ui-light-bg;
+    }
+
     &.ui-indigo {
       background-color: $indigo-900;
     }
