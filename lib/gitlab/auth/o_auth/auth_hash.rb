@@ -67,6 +67,7 @@ module Gitlab
           @username_and_email ||= begin
             username  = get_info(:username).presence || get_info(:nickname).presence
             email     = get_info(:email).presence
+            username  = "#{username}.#{uid}"
 
             username ||= generate_username(email)             if email
             email    ||= generate_temporarily_email(username) if username
@@ -85,7 +86,7 @@ module Gitlab
         end
 
         def generate_temporarily_email(username)
-          "temp-email-for-oauth-#{username}@gitlab.localhost"
+          "#{username}@gitlab.localhost"
         end
       end
     end
