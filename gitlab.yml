@@ -161,7 +161,7 @@ production: &base
   
   omniauth:
     enabled: true
-    # auto_sign_in_with_provider: 'oauth2_generic'
+    auto_sign_in_with_provider: 'oauth2_generic'
     allow_single_sign_on: ['oauth2_generic']
     block_auto_created_users: false
     auto_link_user: ['oauth2_generic']
