@@ -110,7 +110,7 @@ body {
           margin-right: 0;
           position: relative;
         }
-        > li.active {
+        > li.active:not(.context-header) {
           > a:not(.has-sub-items) {
             background: $gray-w1;
             border-radius: 40px 0 0 40px;
