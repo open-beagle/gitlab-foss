@@ -45,7 +45,7 @@ module Gitlab
         menu.merge({
           views: @views,
           shortcuts: @shortcuts,
-          activeTitle: _('Menu')
+          activeTitle: _('More actions')
         })
       end
     end
