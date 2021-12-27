@@ -67,7 +67,7 @@ module Gitlab
           @username_and_email ||= begin
             username  = get_info(:username).presence || get_info(:nickname).presence
             email     = get_info(:email).presence
-            username  = "#{username}.#{uid}"
+            username  = username.downcase
 
             username ||= generate_username(email)             if email
             email    ||= generate_temporarily_email(username) if username
