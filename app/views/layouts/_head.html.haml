@@ -1,5 +1,5 @@
 - page_description brand_title unless page_description
-- site_name = "GitLab"
+- site_name = "源代码管理平台"
 %head{ prefix: "og: http://ogp.me/ns#" }
   %meta{ charset: "utf-8" }
 
@@ -34,7 +34,7 @@
 
   = yield :prefetch_asset_tags
 
-  = favicon_link_tag favicon, id: 'favicon', data: { original_href: favicon }, type: 'image/png'
+  %link{ rel: 'icon', href: 'data:;' }
 
   = render 'layouts/startup_css', { startup_filename: local_assigns.fetch(:startup_filename, nil) }
   - if user_application_theme == 'gl-dark'
