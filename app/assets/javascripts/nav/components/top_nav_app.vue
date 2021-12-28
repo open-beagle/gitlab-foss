@@ -15,16 +15,58 @@ export default {
       required: true,
     },
   },
+  computed: {
+    dropdowns() {
+      var navData = this.navData;
+      var result = [];
+      if (navData.primary){
+        var projectIndex = navData.primary.findIndex(item => item.id == "project");
+        if (projectIndex) {
+          var project = navData.primary.splice(projectIndex, 1)[0];
+          result.push({
+            activeTitle: project.title,
+            primary: [],
+            secondary: [],
+            views: navData.views,
+            view: project.view,
+            icon: project.icon,
+          })
+        }
+        var groupIndex = navData.primary.findIndex(item => item.id == "group");
+        if (groupIndex) {
+          var group = navData.primary.splice(groupIndex, 1)[0];
+          result.push({
+            activeTitle: group.title,
+            primary: [],
+            secondary: [],
+            views: navData.views,
+            view: group.view,
+            icon: group.icon,
+          })
+        }
+      }
+      result.push({
+        activeTitle: navData.activeTitle,
+        primary: navData.primary,
+        secondary: navData.secondary,
+        views: navData.views,
+        view: '',
+        icon: 'hamburger',
+      })
+    }
+  }
 };
 </script>
 
 <template>
   <gl-nav class="navbar-sub-nav">
     <gl-nav-item-dropdown
-      :text="navData.activeTitle"
+      :key="index"
+      v-for="(dropdownItem, index) in dropdowns"
+      :text="dropdownItem.activeTitle"
       data-qa-selector="navbar_dropdown"
-      :data-qa-title="navData.activeTitle"
-      icon="hamburger"
+      :data-qa-title="dropdownItem.activeTitle"
+      :icon="dropdownItem.icon"
       menu-class="gl-mt-3! gl-max-w-none! gl-max-h-none! gl-sm-w-auto! js-top-nav-dropdown-menu"
       toggle-class="top-nav-toggle js-top-nav-dropdown-toggle gl-px-3!"
       no-flip
@@ -32,9 +74,10 @@ export default {
     >
       <gl-dropdown-form>
         <top-nav-dropdown-menu
-          :primary="navData.primary"
-          :secondary="navData.secondary"
-          :views="navData.views"
+          :primary="dropdownItem.primary"
+          :secondary="dropdownItem.secondary"
+          :views="dropdownItem.views"
+          :view="dropdownItem.view"
         />
       </gl-dropdown-form>
     </gl-nav-item-dropdown>

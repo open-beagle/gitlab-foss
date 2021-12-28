@@ -27,6 +27,11 @@ export default {
       required: false,
       default: () => ({}),
     },
+    view: {
+      type: String,
+      required: false,
+      default: () => ({}),
+    },
   },
   data() {
     // It's expected that primary & secondary never change, so these are treated as "init" props.
@@ -45,6 +50,9 @@ export default {
       return this.menuSections.flatMap((x) => x.menuItems);
     },
     activeView() {
+      if (this.view) {
+        return this.view;
+      }
       const active = this.allMenuItems.find((x) => x.active);
 
       return active?.view;
@@ -74,6 +82,7 @@ export default {
     <div
       class="gl-w-grid-size-30 gl-flex-shrink-0 gl-bg-gray-10 gl-p-3"
       :class="menuClass"
+      v-if="menuSections && menuSections.length"
       data-testid="menu-sidebar"
     >
       <top-nav-menu-sections :sections="menuSections" @menu-item-click="onMenuItemClick" />
