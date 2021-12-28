@@ -21,7 +21,7 @@ export default {
       var result = [];
       if (navData.primary){
         var projectIndex = navData.primary.findIndex(item => item.id == "project");
-        if (projectIndex) {
+        if (projectIndex > -1) {
           var project = navData.primary.splice(projectIndex, 1)[0];
           result.push({
             activeTitle: project.title,
@@ -32,8 +32,8 @@ export default {
             icon: project.icon,
           })
         }
-        var groupIndex = navData.primary.findIndex(item => item.id == "group");
-        if (groupIndex) {
+        var groupIndex = navData.primary.findIndex(item => item.id == "groups");
+        if (groupIndex > -1) {
           var group = navData.primary.splice(groupIndex, 1)[0];
           result.push({
             activeTitle: group.title,
@@ -53,6 +53,7 @@ export default {
         view: '',
         icon: 'hamburger',
       })
+      return result;
     }
   }
 };
