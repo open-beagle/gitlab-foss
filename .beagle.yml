@@ -2,7 +2,7 @@ kind: pipeline
 name: docker
 
 platform:
-  runner: 10.11.92.33
+  runner: 10.11.92.36
 
 volumes:
   - name: docker
@@ -14,47 +14,189 @@ workspace:
   path: src/gitlab.com/gitlab-org/gitlab
 
 steps:
-  - name: gitlab-workhorse-docker-arch
-    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3
+  - name: read-cache
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-cache:1.0
     volumes:
-      - name: docker
-        path: /var/run/docker.sock
+      - name: cache
+        path: /cache
     settings:
-      platforms: linux/amd64,linux/arm64,linux/ppc64le
-      template: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3-ARCH
-      target: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3
-      username:
-        from_secret: REGISTRY_USER_ALIYUN
-      password:
-        from_secret: REGISTRY_PASSWORD_ALIYUN
+      restore: true
+      check: yarn.lock
+      mount:
+        - ./node_modules
+        - ./vendor/bundle
+    depends_on:
+      - clone
 
-  - name: gitlab-sidekiq-docker-arch
-    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3
+  - name: gitlab-assets
+    image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.3-amd64
     volumes:
-      - name: docker
-        path: /var/run/docker.sock
-    settings:
-      platforms: linux/amd64,linux/arm64,linux/ppc64le
-      template: registry.cn-qingdao.aliyuncs.com/wod/gitlab-sidekiq:v14.2.3-ARCH
-      target: registry.cn-qingdao.aliyuncs.com/wod/gitlab-sidekiq:v14.2.3
-      username:
-        from_secret: REGISTRY_USER_ALIYUN
-      password:
-        from_secret: REGISTRY_PASSWORD_ALIYUN
+      - name: yarn
+        path: /usr/local/share/.cache/yarn
+    environment:
+      RAILS_ENV: production
+      NODE_ENV: production
+      USE_DB: "false"
+      SKIP_STORAGE_VALIDATION: "true"
+      NODE_OPTIONS: "--max_old_space_size=3584"
+    commands:
+      - cp config/gitlab.yml.example config/gitlab.yml
+      - cp config/resque.yml.example config/resque.yml
+      - cp config/secrets.yml.example config/secrets.yml
+      - cp config/database.yml.postgresql config/database.yml
+      - bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems
+      - bundle config set --local without 'development test mysql aws kerberos'
+      - bundle install --clean --deployment --jobs 4 --retry 5
+      - rm -rf /root/.config
+      - yarn install --production
+      - bundle exec rake gettext:compile
+      - bundle exec rake gitlab:assets:compile
+    depends_on:
+      - read-cache
 
-  - name: gitlab-webservice-docker-arch
-    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3
+  - name: store-cache
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-cache:1.0
     volumes:
-      - name: docker
+      - name: cache
+        path: /cache
+    settings:
+      rebuild: true
+      check: yarn.lock
+      mount:
+        - ./node_modules
+        - ./vendor/bundle
+    depends_on:
+      - gitlab-assets
+
+  - name: docker-gitlab-webservice
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
+    environment:
+      http_proxy: http://10.11.92.33:1282
+      https_proxy: http://10.11.92.33:1282
+    volumes:
+      - name: docker-sock
         path: /var/run/docker.sock
     settings:
-      platforms: linux/amd64,linux/arm64,linux/ppc64le
-      template: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3-ARCH
-      target: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3
-      username:
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3
+      dockerfile: .beagle/gitlab-webservice-ex/dockerfile
+      repo: wod/gitlab-webservice
+      version: "v14.2.3-bg"
+      args: "TARGETOS=linux,TARGETARCH=amd64"
+      registry: registry.cn-qingdao.aliyuncs.com
+      registry_user:
         from_secret: REGISTRY_USER_ALIYUN
-      password:
+      registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
+    depends_on:
+      - gitlab-assets
+
+  - name: docker-gitlab-workhorse
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
+    environment:
+      http_proxy: http://10.11.92.33:1282
+      https_proxy: http://10.11.92.33:1282
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+    settings:
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3
+      dockerfile: .beagle/gitlab-workhorse-ex/dockerfile
+      repo: wod/gitlab-workhorse
+      version: "v14.2.3-bg"
+      args: "TARGETOS=linux,TARGETARCH=amd64"
+      registry: registry.cn-qingdao.aliyuncs.com
+      registry_user:
+        from_secret: REGISTRY_USER_ALIYUN
+      registry_password:
+        from_secret: REGISTRY_PASSWORD_ALIYUN
+    depends_on:
+      - gitlab-assets
+
+  - name: docker-gitlab-webservice-arm64
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
+    environment:
+      http_proxy: http://10.11.92.33:1282
+      https_proxy: http://10.11.92.33:1282
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+    settings:
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3-arm64
+      dockerfile: .beagle/gitlab-webservice-ex/dockerfile
+      repo: wod/gitlab-webservice
+      version: "v14.2.3-bg-arm64"
+      args: "TARGETOS=linux,TARGETARCH=amd64"
+      registry: registry.cn-qingdao.aliyuncs.com
+      registry_user:
+        from_secret: REGISTRY_USER_ALIYUN
+      registry_password:
+        from_secret: REGISTRY_PASSWORD_ALIYUN
+    depends_on:
+      - gitlab-assets
+
+  - name: docker-gitlab-workhorse-arm64
+    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
+    environment:
+      http_proxy: http://10.11.92.33:1282
+      https_proxy: http://10.11.92.33:1282
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+    settings:
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3-arm64
+      dockerfile: .beagle/gitlab-workhorse-ex/dockerfile
+      repo: wod/gitlab-workhorse
+      version: "v14.2.3-bg-arm64"
+      args: "TARGETOS=linux,TARGETARCH=amd64"
+      registry: registry.cn-qingdao.aliyuncs.com
+      registry_user:
+        from_secret: REGISTRY_USER_ALIYUN
+      registry_password:
+        from_secret: REGISTRY_PASSWORD_ALIYUN
+    depends_on:
+      - gitlab-assets
+
+  # - name: gitlab-workhorse-docker-arch
+  #   image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3
+  #   volumes:
+  #     - name: docker
+  #       path: /var/run/docker.sock
+  #   settings:
+  #     platforms: linux/amd64,linux/arm64,linux/ppc64le
+  #     template: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3-ARCH
+  #     target: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3
+  #     username:
+  #       from_secret: REGISTRY_USER_ALIYUN
+  #     password:
+  #       from_secret: REGISTRY_PASSWORD_ALIYUN
+
+  # - name: gitlab-sidekiq-docker-arch
+  #   image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3
+  #   volumes:
+  #     - name: docker
+  #       path: /var/run/docker.sock
+  #   settings:
+  #     platforms: linux/amd64,linux/arm64,linux/ppc64le
+  #     template: registry.cn-qingdao.aliyuncs.com/wod/gitlab-sidekiq:v14.2.3-ARCH
+  #     target: registry.cn-qingdao.aliyuncs.com/wod/gitlab-sidekiq:v14.2.3
+  #     username:
+  #       from_secret: REGISTRY_USER_ALIYUN
+  #     password:
+  #       from_secret: REGISTRY_PASSWORD_ALIYUN
+
+  # - name: gitlab-webservice-docker-arch
+  #   image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3
+  #   volumes:
+  #     - name: docker
+  #       path: /var/run/docker.sock
+  #   settings:
+  #     platforms: linux/amd64,linux/arm64,linux/ppc64le
+  #     template: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3-ARCH
+  #     target: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3
+  #     username:
+  #       from_secret: REGISTRY_USER_ALIYUN
+  #     password:
+  #       from_secret: REGISTRY_PASSWORD_ALIYUN
 ---
 kind: secret
 name: REGISTRY_USER_ALIYUN

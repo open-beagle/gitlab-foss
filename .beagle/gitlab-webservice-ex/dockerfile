@@ -1,0 +1,15 @@
+ARG BASE
+
+FROM $BASE
+
+ARG AUTHOR
+ARG VERSION
+LABEL maintainer=${AUTHOR} version=${VERSION}
+
+ARG TARGETOS
+ARG TARGETARCH
+
+RUN rm -r /srv/gitlab/public/assets
+ADD ./public/assets /srv/gitlab/public/assets 
+ADD ./lib/gitlab /srv/gitlab/lib/gitlab 
+ADD ./app/views /srv/gitlab/app/views  
