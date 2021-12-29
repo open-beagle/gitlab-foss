@@ -24,6 +24,7 @@ steps:
       check: yarn.lock
       mount:
         - ./node_modules
+        - ./vendor/bundle
 
   - name: gitlab-assets
     image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.3-amd64
@@ -59,6 +60,7 @@ steps:
       check: yarn.lock
       mount:
         - ./node_modules
+        - ./vendor/bundle
 
   # - name: gitlab-workhorse-docker-arch
   #   image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3
