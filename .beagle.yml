@@ -8,6 +8,12 @@ volumes:
   - name: docker-sock
     host:
       path: /var/run/docker.sock
+  - name: cache
+    host:
+      path: /data/cache/
+  - name: yarn
+    host:
+      path: /data/cache/yarn/
 
 workspace:
   base: /go
@@ -46,7 +52,9 @@ steps:
       - cp config/database.yml.postgresql config/database.yml
       - bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems
       - bundle config set --local without 'development test mysql aws kerberos'
-      - bundle install --clean --deployment --jobs 4 --retry 5
+      - bundle config set --local clean 'true'
+      - bundle config set --local deployment 'true'
+      - bundle install --jobs 4 --retry 5
       - rm -rf /root/.config
       - yarn install --production
       - bundle exec rake gettext:compile

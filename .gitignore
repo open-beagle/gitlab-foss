@@ -107,3 +107,4 @@ tags.temp
 .stylelintcache
 .solargraph.yml
 /.buildx/
+/dist/
