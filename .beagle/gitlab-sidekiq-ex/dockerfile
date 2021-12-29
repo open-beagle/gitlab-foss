@@ -9,4 +9,6 @@ LABEL maintainer=${AUTHOR} version=${VERSION}
 ARG TARGETOS
 ARG TARGETARCH
 
+USER root
 RUN apt-get update &&  apt-get install -y git
+USER $GITLAB_USER:$GITLAB_USER
