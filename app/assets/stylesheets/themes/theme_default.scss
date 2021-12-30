@@ -7,6 +7,7 @@ $gray-w1: #eef0f5;
 $black-w0: #474c5a;
 $black-w1:#1a2236;
 $blue-w1: #1d35a6;
+$blue-w1-1:#0a48d1;
 
 // gitlab-theme(
 // $search-and-nav-links,
@@ -31,7 +32,7 @@ body {
     );
 
     .navbar-gitlab {
-      background-color: $blue-w1;
+      background-image: linear-gradient(to right, $blue-w1 , $blue-w1-1);
       box-shadow: 0;
 
       .container-fluid .nav>li>a {
