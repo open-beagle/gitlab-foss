@@ -77,7 +77,7 @@ steps:
       - name: docker-sock
         path: /var/run/docker.sock
     settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3-arm64
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3-arm64-test
       dockerfile: .beagle/gitlab-webservice-ex/dockerfile
       repo: wod/gitlab-webservice
       version: "v14.2.3-bg-arm64"
@@ -121,7 +121,7 @@ steps:
       - name: docker-sock
         path: /var/run/docker.sock
     settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-sidekiq:v14.2.3-arm64
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-sidekiq:v14.2.3-arm64-test
       dockerfile: .beagle/gitlab-sidekiq-ex/dockerfile
       repo: wod/gitlab-sidekiq
       version: "v14.2.3-bg-arm64"
