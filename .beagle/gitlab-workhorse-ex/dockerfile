@@ -12,3 +12,4 @@ ARG TARGETARCH
 # RUN apt-get update &&  apt-get install -y git
 RUN rm -r /srv/gitlab/public/assets
 ADD ./public/assets /srv/gitlab/public/assets  
+USER $GITLAB_USER:$GITLAB_USER

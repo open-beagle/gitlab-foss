@@ -19,7 +19,9 @@ cp config/secrets.yml.example config/secrets.yml && \
 cp config/database.yml.postgresql config/database.yml && \
 bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems && \
 bundle config set --local without 'development test mysql aws kerberos' && \
-bundle install --clean --deployment --jobs 4 --retry 5 && \
+bundle config set --local clean 'true' && \
+bundle config set --local deployment 'true' && \
+bundle install --jobs 4 --retry 5 && \
 rm -rf /root/.config && \
 yarn install --production --pure-lockfile && \
 bundle exec rake gettext:compile && \
@@ -49,4 +51,21 @@ docker build \
   --file .beagle/gitlab-assets/dockerfile .
 
 docker push registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-assets:v14.2.3-ppc64le
+```
+
+## cache
+
+```bash
+# dev
+docker run \
+--rm \
+-v $PWD/:/go/src/gitlab.com/gitlab-org/gitlab \
+-v $PWD/dist/cache/:/cache \
+-w /go/src/gitlab.com/gitlab-org/gitlab \
+-e PLUGIN_REBUILD=true \
+-e PLUGIN_CHECK=yarn.lock \
+-e PLUGIN_MOUNT=./node_modules,./vendor/bundle \
+-e DRONE_COMMIT_BRANCH=dev-devcloud-authintegration \
+-e CI_WORKSPACE=/go/src/gitlab.com/gitlab-org/gitlab \
+registry.cn-qingdao.aliyuncs.com/wod/devops-cache:1.0
 ```

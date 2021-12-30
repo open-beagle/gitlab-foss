@@ -8,6 +8,12 @@ volumes:
   - name: docker-sock
     host:
       path: /var/run/docker.sock
+  - name: cache
+    host:
+      path: /data/cache/
+  - name: yarn
+    host:
+      path: /data/cache/yarn/
 
 workspace:
   base: /go
@@ -25,8 +31,6 @@ steps:
       mount:
         - ./node_modules
         - ./vendor/bundle
-    depends_on:
-      - clone
 
   - name: gitlab-assets
     image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.3-amd64
@@ -46,13 +50,13 @@ steps:
       - cp config/database.yml.postgresql config/database.yml
       - bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems
       - bundle config set --local without 'development test mysql aws kerberos'
-      - bundle install --clean --deployment --jobs 4 --retry 5
+      - bundle config set --local clean 'true'
+      - bundle config set --local deployment 'true'
+      - bundle install --jobs 4 --retry 5
       - rm -rf /root/.config
       - yarn install --production
       - bundle exec rake gettext:compile
       - bundle exec rake gitlab:assets:compile
-    depends_on:
-      - read-cache
 
   - name: store-cache
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-cache:1.0
@@ -65,8 +69,6 @@ steps:
       mount:
         - ./node_modules
         - ./vendor/bundle
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-webservice-arm64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -87,8 +89,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-workhorse-arm64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -109,8 +109,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-sidekiq-arm64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -131,8 +129,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   # - name: gitlab-workhorse-docker-arch
   #   image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3

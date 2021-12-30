@@ -14,3 +14,6 @@ RUN rm -r /srv/gitlab/public/assets
 ADD ./public/assets /srv/gitlab/public/assets 
 ADD ./lib/gitlab /srv/gitlab/lib/gitlab 
 ADD ./app/views /srv/gitlab/app/views  
+COPY ./beagle/relative_url_git.rb  /srv/gitlab/config/relative_url.rb
+
+USER $GITLAB_USER:$GITLAB_USER
