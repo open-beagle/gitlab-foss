@@ -57,6 +57,9 @@ body {
           a svg:not(.dropdown-chevron) {
             display: none;
           }
+          a svg.dropdown-chevron {
+            display: block;
+          }
           > a {
             font-size: 14px;
             font-weight: 100;
