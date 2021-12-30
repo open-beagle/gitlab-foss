@@ -25,25 +25,37 @@ body {
       $gray-500,
       $black-w0,
       $blue-w1,
-      $gray-500
+      $white-w0
     );
 
     .navbar-gitlab {
       background-color: $blue-w1;
       box-shadow: 0;
 
+      .title .tanuki-logo {
+        color: #fff
+      }
+      .title .logo-text svg {
+          display: none;
+      }
+
       .logo-text svg {
         fill: rgba($white-w0, 0.8);
       }
 
-      .navbar-sub-nav,
-      .navbar-nav {
+      .navbar-sub-nav {
         > li {
           padding-left: 5px;
           padding-right: 5px;
           a svg {
             display: none;
           }
+        }
+      }
+
+      .navbar-sub-nav,
+      .navbar-nav {
+        > li {
           > a:hover,
           > a:focus,
           > button:hover {
