@@ -80,7 +80,7 @@ steps:
       base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3-arm64-test
       dockerfile: .beagle/gitlab-webservice-ex/dockerfile
       repo: wod/gitlab-webservice
-      version: "v14.2.3-bg-arm64"
+      version: "v14.2.3-bg-arm64-test"
       args: "TARGETOS=linux,TARGETARCH=amd64"
       registry: registry.cn-qingdao.aliyuncs.com
       registry_user:
@@ -102,7 +102,7 @@ steps:
       base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3-arm64-test
       dockerfile: .beagle/gitlab-workhorse-ex/dockerfile
       repo: wod/gitlab-workhorse
-      version: "v14.2.3-bg-arm64"
+      version: "v14.2.3-bg-arm64-test"
       args: "TARGETOS=linux,TARGETARCH=amd64"
       registry: registry.cn-qingdao.aliyuncs.com
       registry_user:
@@ -124,7 +124,7 @@ steps:
       base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-sidekiq:v14.2.3-arm64-test
       dockerfile: .beagle/gitlab-sidekiq-ex/dockerfile
       repo: wod/gitlab-sidekiq
-      version: "v14.2.3-bg-arm64"
+      version: "v14.2.3-bg-arm64-test"
       args: "TARGETOS=linux,TARGETARCH=amd64"
       registry: registry.cn-qingdao.aliyuncs.com
       registry_user:
