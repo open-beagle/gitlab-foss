@@ -6,6 +6,7 @@ $gray-w0: #838ba1;
 $gray-w1: #eef0f5;
 $black-w0: #474c5a;
 $black-w1:#1a2236;
+$blue-w1: #1d35a6;
 
 // gitlab-theme(
 // $search-and-nav-links,
@@ -19,38 +20,34 @@ $black-w1:#1a2236;
 body {
   &.ui-default {
     @include gitlab-theme(
-      $gray-500,
+      $white-w0,
       $gray-700,
       $gray-500,
       $black-w0,
-      $gray-50,
+      $blue-w1,
       $gray-500
     );
 
     .navbar-gitlab {
-      background-color: $white-w0;
+      background-color: $blue-w1;
       box-shadow: 0;
 
       .logo-text svg {
-        fill: $gray-900;
-      }
-
-      .navbar .title {
-        > a {
-          &:hover,
-          &:focus {
-            background: transparent;
-          }
-        }
+        fill: rgba($white-w0, 0.8);
       }
 
       .navbar-sub-nav,
       .navbar-nav {
         > li {
+          padding-left: 5px;
+          padding-right: 5px;
+          a svg {
+            display: none;
+          }
           > a:hover,
           > a:focus,
           > button:hover {
-            color: $gray-900;
+            color: rgba($white-w0, 0.8);
           }
 
           &.active > a,
@@ -66,6 +63,15 @@ body {
         .navbar-toggler:hover {
           color: $gray-500;
           border-left: 1px solid $gray-100;
+        }
+      }
+    }
+
+    .navbar .title {
+      > a {
+        &:hover,
+        &:focus {
+          background-color: transparent;
         }
       }
     }
@@ -99,6 +105,7 @@ body {
       }
       svg {
         fill: $gray-w0;
+        display: none;
       }
       .context-header {
         .sidebar-context-title {
@@ -106,6 +113,9 @@ body {
         }
       }
       .sidebar-top-level-items {
+        > li {
+          padding-left: 10px;
+        }
         li a {
           margin-right: 0;
           position: relative;
