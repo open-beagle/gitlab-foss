@@ -19,6 +19,8 @@ $blue-w1: #1d35a6;
 
 body {
   &.ui-default {
+    background: $gray-w1;
+    
     @include gitlab-theme(
       $white-w0,
       $gray-700,
