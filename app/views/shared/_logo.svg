@@ -1,9 +1,7 @@
-<svg class="tanuki-logo" viewBox="0 0 144 24" height="24" width="144">
+<svg class="tanuki-logo" viewBox="0 0 180 40" style="
+    font-size: 30px;
+    font-weight: 100;
+" height="30" width="180">
   
   <text style="text-anchor: start" x="0" y="0" alignment-baseline="text-before-edge">源代码管理平台</text>
-  
-  
-  
-  
-  
 </svg>

@@ -34,11 +34,15 @@ body {
       background-color: $blue-w1;
       box-shadow: 0;
 
+      .container-fluid .nav>li>a {
+        height: 40px;
+      }
+
       .title .tanuki-logo {
         color: #fff
       }
       .title .logo-text svg {
-          display: none;
+        display: none;
       }
 
       .logo-text svg {
@@ -49,8 +53,12 @@ body {
         > li {
           padding-left: 5px;
           padding-right: 5px;
-          a svg {
+          a svg:not(.dropdown-chevron) {
             display: none;
+          }
+          > a {
+            font-size: 14px;
+            font-weight: 100;
           }
         }
       }
