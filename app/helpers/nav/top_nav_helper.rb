@@ -212,7 +212,7 @@ module Nav
     def groups_menu_item_attrs
       {
         id: 'groups',
-        title: 'Groups',
+        title: _('Groups'),
         icon: 'group',
         shortcut_class: 'dashboard-shortcuts-groups'
       }
