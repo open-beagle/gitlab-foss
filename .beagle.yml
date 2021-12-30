@@ -68,72 +68,6 @@ steps:
     depends_on:
       - gitlab-assets
 
-  - name: docker-gitlab-webservice
-    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
-    environment:
-      http_proxy: http://10.11.92.33:1282
-      https_proxy: http://10.11.92.33:1282
-    volumes:
-      - name: docker-sock
-        path: /var/run/docker.sock
-    settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-webservice:v14.2.3
-      dockerfile: .beagle/gitlab-webservice-ex/dockerfile
-      repo: wod/gitlab-webservice
-      version: "v14.2.3-bg"
-      args: "TARGETOS=linux,TARGETARCH=amd64"
-      registry: registry.cn-qingdao.aliyuncs.com
-      registry_user:
-        from_secret: REGISTRY_USER_ALIYUN
-      registry_password:
-        from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
-
-  - name: docker-gitlab-workhorse
-    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
-    environment:
-      http_proxy: http://10.11.92.33:1282
-      https_proxy: http://10.11.92.33:1282
-    volumes:
-      - name: docker-sock
-        path: /var/run/docker.sock
-    settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3
-      dockerfile: .beagle/gitlab-workhorse-ex/dockerfile
-      repo: wod/gitlab-workhorse
-      version: "v14.2.3-bg"
-      args: "TARGETOS=linux,TARGETARCH=amd64"
-      registry: registry.cn-qingdao.aliyuncs.com
-      registry_user:
-        from_secret: REGISTRY_USER_ALIYUN
-      registry_password:
-        from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
-
-  - name: docker-gitlab-sidekiq
-    image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
-    environment:
-      http_proxy: http://10.11.92.33:1282
-      https_proxy: http://10.11.92.33:1282
-    volumes:
-      - name: docker-sock
-        path: /var/run/docker.sock
-    settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-sidekiq:v14.2.3
-      dockerfile: .beagle/gitlab-sidekiq-ex/dockerfile
-      repo: wod/gitlab-sidekiq
-      version: "v14.2.3-bg"
-      args: "TARGETOS=linux,TARGETARCH=amd64"
-      registry: registry.cn-qingdao.aliyuncs.com
-      registry_user:
-        from_secret: REGISTRY_USER_ALIYUN
-      registry_password:
-        from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
-
   - name: docker-gitlab-webservice-arm64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
     environment:
@@ -165,7 +99,7 @@ steps:
       - name: docker-sock
         path: /var/run/docker.sock
     settings:
-      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3-arm64
+      base: registry.cn-qingdao.aliyuncs.com/wod/gitlab-workhorse:v14.2.3-arm64-test
       dockerfile: .beagle/gitlab-workhorse-ex/dockerfile
       repo: wod/gitlab-workhorse
       version: "v14.2.3-bg-arm64"
