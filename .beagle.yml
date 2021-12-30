@@ -31,8 +31,6 @@ steps:
       mount:
         - ./node_modules
         - ./vendor/bundle
-    depends_on:
-      - clone
 
   - name: gitlab-assets
     image: registry.cn-qingdao.aliyuncs.com/wod-arm/gitlab-runtime:v14.2.3-amd64
@@ -59,8 +57,6 @@ steps:
       - yarn install --production
       - bundle exec rake gettext:compile
       - bundle exec rake gitlab:assets:compile
-    depends_on:
-      - read-cache
 
   - name: store-cache
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-cache:1.0
@@ -73,8 +69,6 @@ steps:
       mount:
         - ./node_modules
         - ./vendor/bundle
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-webservice
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -95,8 +89,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-workhorse
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -117,8 +109,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-sidekiq
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -139,8 +129,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-webservice-arm64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -161,8 +149,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-workhorse-arm64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -183,8 +169,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   - name: docker-gitlab-sidekiq-arm64
     image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker:1.0
@@ -205,8 +189,6 @@ steps:
         from_secret: REGISTRY_USER_ALIYUN
       registry_password:
         from_secret: REGISTRY_PASSWORD_ALIYUN
-    depends_on:
-      - gitlab-assets
 
   # - name: gitlab-workhorse-docker-arch
   #   image: registry.cn-qingdao.aliyuncs.com/wod/devops-docker-manifest:v1.2.3
