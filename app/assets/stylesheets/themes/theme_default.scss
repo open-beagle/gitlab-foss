@@ -88,6 +88,17 @@ body {
         }
       }
 
+      .nav {
+        > li {
+          
+          &.active > a,
+          &.dropdown.show > a {
+            svg {
+              fill: $blue-w1;
+            }
+          }
+        }
+      }
       .container-fluid {
         .navbar-toggler,
         .navbar-toggler:hover {
