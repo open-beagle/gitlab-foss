@@ -31,6 +31,10 @@ body {
       $white-w0
     );
 
+    .content-wrapper-margin {
+      margin-top: 48px;
+    }
+
     .navbar-gitlab {
       background-image: linear-gradient(to right, $blue-w1 , $blue-w1-1);
       box-shadow: 0;
@@ -123,7 +127,9 @@ body {
         }
       }
     }
-
+    .nav-sidebar {
+      top: 48px;
+    }
     .nav-sidebar:not(.sidebar-collapsed-desktop) {
       background-color: $blue-w0;
       a {

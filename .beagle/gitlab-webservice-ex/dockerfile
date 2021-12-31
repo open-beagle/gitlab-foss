@@ -17,5 +17,6 @@ ADD ./public/assets /srv/gitlab/public/assets
 ADD ./lib/gitlab /srv/gitlab/lib/gitlab 
 ADD ./app/views /srv/gitlab/app/views  
 ADD ./app/helpers /srv/gitlab/app/helpers  
+ADD ./app/config/initializers /srv/gitlab/app/config/initializers
 
 USER $GITLAB_USER:$GITLAB_USER
